@@ -34,7 +34,7 @@ public class Assignment2 {
      * @return true if connecting is successful, false otherwise
      */
     public boolean connectDB(String URL, String username, String password) {
-        // Replace this return statement with an implementation of this method!
+        // TODO: replace this return statement with an implementation of this method!
         return false;
     }
 
@@ -44,7 +44,7 @@ public class Assignment2 {
      * @return true if the closing was successful, false otherwise
      */
     public boolean disconnectDB() {
-        // Replace this return statement with an implementation of this method!
+        // TODO: replace this return statement with an implementation of this method!
         return false;
     }
 
@@ -62,7 +62,7 @@ public class Assignment2 {
      * @return true if the operation was successful, false otherwise
      */
     public boolean assignGrader(int groupID, String grader) {
-        // Replace this return statement with an implementation of this method!
+        // TODO: replace this return statement with an implementation of this method!
         return false;
     }
 
@@ -87,7 +87,7 @@ public class Assignment2 {
      * @return true if the operation was successful, false otherwise
      */
     public boolean recordMember(int assignmentID, int groupID, String newMember) {
-        // Replace this return statement with an implementation of this method!
+        // TODO: replace this return statement with an implementation of this method!
         return false;
     }
 
@@ -134,12 +134,12 @@ public class Assignment2 {
      */
     public boolean createGroups(int assignmentToGroup, int otherAssignment,
             String repoPrefix) {
-        // Replace this return statement with an implementation of this method!
+        // TODO: replace this return statement with an implementation of this method!
         return false;
     }
 
     public static void main(String[] args) {
-        // You can put testing code in here. It will not affect our autotester.
+        // TODO: You can put testing code in here. It will not affect our autotester.
         System.out.println("Boo!");
     }
 }
