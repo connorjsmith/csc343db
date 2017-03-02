@@ -4,11 +4,11 @@
 -- A groups mark for an assignment is the group-by (assignment_id, group_id) and sum(section_grade)
 
 -- Reset all views
-DROP VIEW CountedBucketStudentPercentages;
-DROP VIEW BucketedStudentPercentages;
-DROP VIEW StudentPercentageGrade;
-DROP VIEW GroupAssignmentPercentageGrade;
-DROP VIEW AssigmentDivisors;
+DROP VIEW IF EXISTS CountedBucketStudentPercentages;
+DROP VIEW IF EXISTS BucketedStudentPercentages;
+DROP VIEW IF EXISTS StudentPercentageGrade;
+DROP VIEW IF EXISTS GroupAssignmentPercentageGrade;
+DROP VIEW IF EXISTS AssigmentDivisors;
 
 -- Define views for intermediate results
 CREATE VIEW AssignmentDivisors AS (
@@ -61,9 +61,9 @@ CREATE VIEW CountedBucketStudentPercentages AS (
 );    
 
 -- TODO: remove these "print statements"
-SELECT * FROM AssignmentDivisors;
-SELECT * FROM GroupAssignmentPercentageGrade;
-SELECT * FROM StudentPercentageGrade;
-SELECT * FROM BucketedStudentPercentages;
+-- SELECT * FROM AssignmentDivisors;
+-- SELECT * FROM GroupAssignmentPercentageGrade;
+-- SELECT * FROM StudentPercentageGrade;
+-- SELECT * FROM BucketedStudentPercentages;
 SELECT * FROM CountedBucketStudentPercentages;
 

@@ -19,6 +19,8 @@ INSERT INTO MarkusUser VALUES ('s1', 'sln1', 'sfn1', 'student');
 INSERT INTO MarkusUser VALUES ('s2', 'sln2', 'sfn2', 'student');
 INSERT INTO MarkusUser VALUES ('s3', 'sln3', 'sfn3', 'student');
 INSERT INTO MarkusUser VALUES ('s4', 'sln4', 'sfn4', 'student');
+INSERT INTO MarkusUser VALUES ('perfect_s1', 'sln5', 'sfn5', 'student');
+INSERT INTO MarkusUser VALUES ('perfect_s2', 'sln6', 'sfn6', 'student');
 INSERT INTO MarkusUser VALUES ('t1', 'tln1', 'tfn1', 'TA');
 
 INSERT INTO Assignment VALUES (1000, 'a1', '2017-02-08 20:00', 1, 2);
@@ -65,3 +67,10 @@ INSERT INTO Grade VALUES (2001, 4002, 3);
 INSERT INTO Grade VALUES (2001, 4003, 20);
 INSERT INTO Result VALUES (2001, 17.25, false); -- 3*0.75 + 20*0.75
 
+-- Add a perfect group
+INSERT INTO AssignmentGroup VALUES (9999, 1000, 'perf_url');
+INSERT INTO Membership VALUES ('perfect_s1', 9999);
+INSERT INTO Membership VALUES ('perfect_s2', 9999);
+INSERT INTO Grade VALUES (9999, 4000, 4);
+INSERT INTO Grade VALUES (9999, 4001, 12);
+INSERT INTO Result VALUES (9999, 10, true);
