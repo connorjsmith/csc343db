@@ -1,0 +1,87 @@
+-- This demo shows how we can automatically generate a series of
+-- values for an attribute in psql.  For the official documentation, see:
+-- https://www.postgresql.org/docs/9.4/static/datatype-numeric.html#DATATYPE-SERIAL
+
+
+-- Here we define a table with an attribute whose type is SERIAL instead of,
+-- say, INTEGER.
+csc343h-dianeh=> CREATE TABLE clients (id SERIAL, email VARCHAR(30));
+CREATE TABLE
+
+-- We can assign values to that attribute just like usual if we wish.
+-- (I have given up here on capitalizing keywords, btw.)
+csc343h-dianeh=> insert into clients values 
+csc343h-dianeh-> (35, 'tytyty@gmail.com'),
+csc343h-dianeh-> (11, 'instigator@gmail.com');
+INSERT 0 2
+csc343h-dianeh=> select * from clients;
+ id |        email         
+----+----------------------
+ 35 | tytyty@gmail.com
+ 11 | instigator@gmail.com
+(2 rows)
+
+-- But if we don't provide a value for that attribute when we insert a row,
+-- postgreSQL will do it for us.  Notice that it starts at 1 and counts up.
+csc343h-dianeh=> insert into clients(email) values 
+csc343h-dianeh-> ('deedee@gmail.com'), 
+csc343h-dianeh-> ('ruby.max@gmail.com');
+INSERT 0 2
+csc343h-dianeh=> select * from clients;
+ id |        email         
+----+----------------------
+ 35 | tytyty@gmail.com
+ 11 | instigator@gmail.com
+  1 | deedee@gmail.com
+  2 | ruby.max@gmail.com
+(4 rows)
+
+-- We can also manipulate the value of the SERIAL's counter as shown below.
+-- SERIAL's counter has a name is made from the table name, plus
+-- the attribute name, plus '_seq'.
+csc343h-dianeh=> select setval('clients_id_seq', 35);
+ setval 
+--------
+     35
+(1 row)
+
+-- The next time we insert a row without providing a value for the SERIAL
+-- attribute, postgreSQL advances the value by one and then uses it.
+csc343h-dianeh=> insert into clients(email) values
+csc343h-dianeh-> ('clementine@gmail.com');
+INSERT 0 1
+csc343h-dianeh=> select * from clients;
+ id |        email         
+----+----------------------
+ 35 | tytyty@gmail.com
+ 11 | instigator@gmail.com
+  1 | deedee@gmail.com
+  2 | ruby.max@gmail.com
+ 36 | clementine@gmail.com
+(5 rows)
+
+-- If we're not careful, our SERIAL's counter can bump into an ID that we
+-- are already using.
+csc343h-dianeh=> select setval('clients_id_seq', 35);
+ setval 
+--------
+     35
+(1 row)
+
+csc343h-dianeh=> insert into clients(email) values
+csc343h-dianeh-> ('max@gmail.com');
+INSERT 0 1
+csc343h-dianeh=> select * from clients;
+ id |        email         
+----+----------------------
+ 35 | tytyty@gmail.com
+ 11 | instigator@gmail.com
+  1 | deedee@gmail.com
+  2 | ruby.max@gmail.com
+ 36 | clementine@gmail.com
+ 36 | max@gmail.com
+(6 rows)
+
+-- This wasn't a problem here because we never said the attribute id was
+-- UNIQUE or a PRIMARY KEY.  If that had been the case, the INSERT INTO
+-- would have been rejected.

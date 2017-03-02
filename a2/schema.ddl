@@ -43,7 +43,7 @@ CREATE TABLE Required (
 -- We store the URL of the shared repository where their submitted files are
 -- stored. 
 CREATE TABLE AssignmentGroup (
-  group_id integer PRIMARY KEY,
+  group_id SERIAL PRIMARY KEY,
   assignment_id integer REFERENCES Assignment,
   repo varchar(100) NOT NULL
 ) ;
@@ -83,7 +83,7 @@ CREATE TABLE Grader (
 -- scenario might be to have them sum to 100 or to 1.0.
 CREATE TABLE RubricItem (
   rubric_id integer PRIMARY KEY,
-  assignment_id integer NOT NULL,
+  assignment_id integer NOT NULL REFERENCES Assignment,
   name varchar(50) NOT NULL,
   out_of integer NOT NULL,
   weight real NOT NULL,
