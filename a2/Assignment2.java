@@ -34,8 +34,15 @@ public class Assignment2 {
      * @return true if connecting is successful, false otherwise
      */
     public boolean connectDB(String URL, String username, String password) {
-        // TODO: replace this return statement with an implementation of this method!
-        return false;
+        try {
+            connection = DriverManager.getConnection(URL, username, password);
+            Statement searchpathStatement = connection.createStatement();
+            searchpathStatement.execute("SET search_path TO markus");
+        } catch (SQLException se) {
+            System.err.println("SQL Exception.<Message>: " + se.getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -45,7 +52,13 @@ public class Assignment2 {
      */
     public boolean disconnectDB() {
         // TODO: replace this return statement with an implementation of this method!
-        return false;
+        try {
+            connection.close();
+        } catch (SQLException se) {
+            System.err.println("SQL Exception.<Message>: " + se.getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -63,7 +76,54 @@ public class Assignment2 {
      */
     public boolean assignGrader(int groupID, String grader) {
         // TODO: replace this return statement with an implementation of this method!
-        return false;
+        PreparedStatement ps;
+        ResultSet rs;
+        try {
+            // Check if there is a grader associated with this group
+            String graderAlreadyExists = "SELECT username FROM Grader WHERE group_id = ?";
+            ps = connection.prepareStatement(graderAlreadyExists);
+            ps.setInt(1, groupID);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                // Since the Grader.username column references a primary key, it cannot be NULL
+                // Therefore this groupID already has a grader
+                System.out.println("Group '" + groupID + "' already has a grader");
+                return false;
+            }
+
+            // Check that the new grader is a TA or Prof
+            String graderIsNotTAOrProf = "SELECT username FROM MarkusUser WHERE username = ? AND (type = 'TA' OR type = 'instructor')";
+            ps = connection.prepareStatement(graderIsNotTAOrProf);
+            ps.setString(1, grader);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                System.out.println("The grader '" + grader + "' is not a Prof or TA");
+                return false; // The grader is not a TA or Prof, or is not a Markus User
+            }
+
+            // Check the group exists in the AssignmentGroup table
+            String groupIDExists = "SELECT group_id FROM AssignmentGroup WHERE group_id = ?";
+            ps = connection.prepareStatement(groupIDExists);
+            ps.setInt(1, groupID);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                System.out.println("Group '" + groupID + "' does not exist");
+                return false; // The group does not exist
+            }
+
+            // Insert the new valid record
+            String insert = "INSERT INTO Grader(username, group_id) VALUES (?, ?)";
+            ps = connection.prepareStatement(insert);
+            ps.setString(1, grader);
+            ps.setInt(2, groupID);
+            System.out.println("Executing <" + insert + "> with params (" + groupID + ", " + grader + ")");
+            // rs = ps.executeQuery();
+        } catch (SQLException se) {
+            // We got an error, return false
+            System.err.println("SQL Exception.<Message>: " + se.getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -88,6 +148,15 @@ public class Assignment2 {
      */
     public boolean recordMember(int assignmentID, int groupID, String newMember) {
         // TODO: replace this return statement with an implementation of this method!
+        String studentAlreadyInGroup = "TODO";
+
+        String groupAtCapacity = "TODO";
+
+        String newMemberNotValidStudent = "TODO";
+
+        String assignmentDoesNotExist = "TODO";
+
+        String groupIDNotDeclaredForAssignment = "TODO";
         return false;
     }
 
@@ -132,14 +201,144 @@ public class Assignment2 {
      *            the prefix of the URL for the group's repository
      * @return true if successful and false otherwise
      */
+
+    private int createSingleGroup(int assignmentID, string repoPrefix) {
+        // TODO implement this, returning the group_id of the new record
+        String tempRepoURL = "temp_will_be_replaced";
+        String insertGroup = "INSERT INTO AssignmentGroup(assignment_id, repo) VALUES(?, ?) RETURNING group_id"; // returns a uniquely generated group_id
+        String updateInsertedGroup = "UPDATE AssignmentGroup SET repo = ? WHERE group_id = ?"; // update on primary key of AssignmentGroup, guaranteed unique
+    }
+
+    private boolean addStudentsToGroup(int groupID, ArrayList<String> studentUsernames) {
+        String insertStudent = "INSERT INTO Membership VALUES (?, ?)";
+        for (String username : studentUsernames) {
+
+
+        }
+        return false;
+    }
+        
+        
     public boolean createGroups(int assignmentToGroup, int otherAssignment,
             String repoPrefix) {
         // TODO: replace this return statement with an implementation of this method!
+        String noAssignmentToGroupFound = "TODO";
+        String noOtherAssignmentFound = "TODO";
+        String otherAssignmentStudentsSorted = "TODO";
+        String maxGroupSizeQuery = "TODO";
+        int maxGroupSizeForAssignment = 0; // TODO: get this value from
+
+        // TODO: get student_iterator as a sorted relation as specified in the docstring
+        while (student_iterator.next()) {
+            int groupID = createSingleGroup(assignmentToGroup, repoPrefix);
+
+            // get up to maxGroupSizeForAssignment students
+            ArrayList<String> studentUsernames = new ArrayList();
+            studentUseranmes.append(student_iterator.getString("username"));
+            int current_count = 1;
+            while (current_count < maxGroupSizeForAssignment && student_iterator.next()) {
+                current_count++;
+                studentUseranmes.append(student_iterator.getString("username"));
+            }
+            boolean success = addStudentsToGroup(groupID, studentUsernames);
+            if (!success) return false;
+        }
+
+        
+        return false;
+    }
+
+    public static boolean testAssignGrader() {
+        System.out.println("\n\nStarting test 'testAssignGrader'\n");
+        Assignment2 a2;
+        boolean result; // TODO remove this
+        try {
+            a2 = new Assignment2();
+        } catch (SQLException e) {
+            System.out.println("Got constructor exception " + e);
+            System.out.println("FAILED!");return false;
+        }
+        System.out.println("Connecting to DB");
+        result = a2.connectDB("jdbc:postgresql://localhost:5432/csc343h-smithc63", "smithc63", "");
+        if (result != true) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("TEST CASE: Adding a new grader for a group");
+        result = a2.assignGrader(2001, "i1");
+        if (result != true) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("TEST CASE: Failing to add a new grader because they are not a TA or Prof");
+        result = a2.assignGrader(2001, "s1");
+        if (result != false) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("TEST CASE: Failing to add a new grader because they are not in the MarkusUser table");
+        result = a2.assignGrader(2001, "not_a_user");
+        if (result != false) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("TEST CASE: Failing to add a new grader because the group does not exist");
+        result = a2.assignGrader(2001000, "i1");
+        if (result != false) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("TEST CASE: Failing when the group already has a grader");
+        result = a2.assignGrader(2000, "i1");
+        if (result != false) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("TEST CASE: Failing gracefully when username is NULL");
+        result = a2.assignGrader(2001000, null);
+        if (result != false) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("Disconnecting from DB");
+        result = a2.disconnectDB();
+        if (result != true) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        return true; // all tests passed
+    }
+
+    public static boolean testRecordMember() {
+        return false;
+    }
+
+    public static boolean testCreateGroups() {
         return false;
     }
 
     public static void main(String[] args) {
         // TODO: You can put testing code in here. It will not affect our autotester.
-        System.out.println("Boo!");
+
+        if(!testAssignGrader()){
+            System.out.println("\n\ntestAssignGrader failed one or more tests!");
+            return;
+        }
+        if(!testRecordMember()){
+            System.out.println("\n\ntestRecordMember failed one or more tests!");
+            return;
+        }
+        if(!testCreateGroups()){
+            System.out.println("\n\ntestCreateGroups failed one or more tests!");
+            return;
+        }
     }
 }
