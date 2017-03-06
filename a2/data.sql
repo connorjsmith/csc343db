@@ -60,6 +60,8 @@ INSERT INTO Assignment VALUES (1001, 'a1.1', '2017-02-09 20:00', 1, 2);
 INSERT INTO AssignmentGroup VALUES (2001, 1001, 'repo_url1');
 INSERT INTO Membership VALUES ('s1', 2001);
 INSERT INTO Membership VALUES ('s2', 2001);
+INSERT INTO Grader VALUES (2001, 'i1');
+
 -- Also test that this works for total weights > 1.0
 INSERT INTO RubricItem VALUES (4002, 1001, 'style-a1.1', 5, 0.75); -- Weighted Divisor of 39.75
 INSERT INTO RubricItem VALUES (4003, 1001, 'tester-a1.1', 50, 0.75); -- """"
