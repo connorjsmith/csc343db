@@ -22,3 +22,10 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 -- Final answer.
 INSERT INTO q4
 	-- put a final query here so that its results will go into the table.
+
+
+
+
+
+-- Associate every grader with their (possibly null) groups and (possibly null) grades for each group
+-- Group By assignment_id, username. Aggregate COUNT(marks) AS num_marked, (COUNT(*) - COUNT(marks)) AS num_not_marked, MIN(mark) as min_mark, MAX(mark) as max_mark
