@@ -106,6 +106,7 @@ CREATE VIEW SoloTeamedAveragesCounts AS (
 SELECT * FROM SoloAssignmentGroupMark;
 SELECT * FROM TeamedAssignmentGroupMark;
 SELECT * FROM SoloTeamedAveragesCounts;
+-- TODO: need to pull in description
 -- Final answer.
 -- INSERT INTO q3
     -- put a final query here so that its results will go into the table.
