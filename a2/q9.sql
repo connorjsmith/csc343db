@@ -18,3 +18,10 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 -- Final answer.
 INSERT INTO q9 
 	-- put a final query here so that its results will go into the table.
+
+
+-- Create every (student1, student2) username pair
+-- List all assignments that had max_group_size >= 2
+-- IF student1 has a group for that assignment, then student2 must be in the same group, otherwise remove this pair
+-- (student1, student2) and (student2, student1) must remain after the above steps for it to be included in the final answer.
+--      Only include pairs where student1 < student2 alphabetically
