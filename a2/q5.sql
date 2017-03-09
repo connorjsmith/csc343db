@@ -12,17 +12,58 @@ CREATE TABLE q5 (
 
 -- You may find it convenient to do this for each of the views
 -- that define your intermediate steps.  (But give them better names!)
-DROP VIEW IF EXISTS intermediate_step CASCADE;
+DROP VIEW IF EXISTS AssignmentDivisors CASCADE;
+DROP VIEW IF EXISTS GraderAssignmentGroup CASCADE;
+DROP VIEW IF EXISTS GraderAssignmentGroupCount CASCADE;
+DROP VIEW IF EXISTS AssignmentGroupCountSpread CASCADE;
+DROP VIEW IF EXISTS GraderAssignmentGroupCountSpreadOverTen CASCADE;
 
--- Define views for your intermediate steps here.
-
--- Final answer.
-INSERT INTO q5 
-	-- put a final query here so that its results will go into the table.
-
+-- Define views for your intermediate steps here
+CREATE VIEW AssignmentDivisors AS (
+    SELECT Assignment.assignment_id, Assignment.due_date, SUM(partial_divisor) AS weighted_divisor
+    FROM Assignment LEFT JOIN (
+        SELECT assignment_id, rubric_id, (out_of * weight) as partial_divisor
+        FROM RubricItem
+    ) AS IntermediateResult on Assignment.assignment_id = IntermediateResult.assignment_id
+    GROUP BY Assignment.assignment_id
+);
 
 -- Associate assignment_id, (nullable) group_id, (nullable) grader_username for every group_id
--- Group By assignment_id, grader_username. COUNT(DISTINCT group_id) as num_assigned
--- Filter above by assignment_id, GROUP BY grader_username, assignment_id. HAVING MAX(num_assigned) - MIN(num_assigned) >= 10
+CREATE VIEW GraderAssignmentGroup AS (
+    SELECT g.username, ag.assignment_id, ag.group_id
+    FROM AssignmentGroup ag -- To map between group_id and assignment_id
+		JOIN Grader g -- For grader/group associations, grader username
+			ON g.group_id = ag.group_id
+);
 
--- Null assignments (no graders, no groups, etc.) should no be reported (TODO: i think?)
+-- Group By assignment_id, grader_username for number of groups for that grader/assignment pair
+CREATE VIEW GraderAssignmentGroupCount AS (
+	SELECT username, assignment_id, COUNT(group_id) AS group_count
+	FROM GraderAssignmentGroup
+	GROUP BY username, assignment_id
+);
+
+-- Calculate the group count spread
+CREATE VIEW AssignmentGroupCountSpread AS (
+	SELECT assignment_id, MIN(group_count), MAX(group_count), MAX(group_count) - MIN(group_count) AS group_spread
+	FROM GraderAssignmentGroupCount
+	GROUP BY assignment_id
+);
+
+-- Show all graders for assignments with spread > 10
+CREATE VIEW GraderAssignmentGroupCountSpreadOverTen AS (
+	SELECT gagc.assignment_id, gagc.username, gagc.group_count
+	FROM GraderAssignmentGroupCount gagc
+		JOIN AssignmentGroupCountSpread spread
+			ON gagc.assignment_id = spread.assignment_id
+	WHERE spread.group_spread > 10
+);
+
+
+-- Final answer.
+-- TODO need to create enough test data for there to be a spread > 10
+INSERT INTO q5 (SELECT * FROM GraderAssignmentGroupCountSpreadOverTen);
+
+SELECT * FROM q5; -- TODO remove
+
+
