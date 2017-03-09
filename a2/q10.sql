@@ -20,3 +20,10 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 -- Final answer.
 INSERT INTO q10
 	-- put a final query here so that its results will go into the table.
+
+-- Find A1 assignment_id
+-- Calculate grades for every group on this assignment_id
+	-- SELECT group_id, mark, mark - avg(mark), CASE mark < avg = below
+	--											CASE mark = avg = at
+	--											case mark > avg = above
+	--											else null
