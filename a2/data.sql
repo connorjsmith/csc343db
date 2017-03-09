@@ -15,6 +15,8 @@ TRUNCATE TABLE MarkusUser CASCADE;
 -- Now insert data from scratch.
 
 INSERT INTO MarkusUser VALUES ('i1', 'iln1', 'ifn1', 'instructor');
+INSERT INTO MarkusUser VALUES ('no_group_instructor', 'no_iln1', 'no_ifn1', 'instructor');
+INSERT INTO MarkusUser VALUES ('no_group_TA', 'no_tln1', 'no_tfn1', 'TA');
 INSERT INTO MarkusUser VALUES ('s1', 'sln1', 'sfn1', 'student');
 INSERT INTO MarkusUser VALUES ('s2', 'sln2', 'sfn2', 'student');
 INSERT INTO MarkusUser VALUES ('s3', 'sln3', 'sfn3', 'student');
