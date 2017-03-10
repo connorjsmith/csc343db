@@ -25,7 +25,7 @@ INSERT INTO MarkusUser VALUES ('perfect_s1', 'sln5', 'sfn5', 'student');
 INSERT INTO MarkusUser VALUES ('perfect_s2', 'sln6', 'sfn6', 'student');
 INSERT INTO MarkusUser VALUES ('t1', 'tln1', 'tfn1', 'TA');
 
-INSERT INTO Assignment VALUES (1000, 'a1', '2017-02-08 20:00', 1, 2);
+INSERT INTO Assignment VALUES (1000, 'A1', '2017-02-08 20:00', 1, 2);
 INSERT INTO Assignment VALUES (0, 'orphan_assignment', '2017-02-08 20:00', 1, 2);
 
 INSERT INTO Required VALUES (1000, 'A1.pdf');
@@ -58,15 +58,15 @@ INSERT INTO Membership VALUES ('s3', 2002);
 INSERT INTO Membership VALUES ('s4', 2002);
 
 -- Add another Assignment, AssignmentGroup, members, RubricItems, and Grades
-INSERT INTO Assignment VALUES (1001, 'a1.1', '2017-02-09 20:00', 1, 2);
+INSERT INTO Assignment VALUES (1001, 'A1.1', '2017-02-09 20:00', 1, 2);
 INSERT INTO AssignmentGroup VALUES (2001, 1001, 'repo_url1');
 INSERT INTO Membership VALUES ('s1', 2001);
 INSERT INTO Membership VALUES ('s2', 2001);
 INSERT INTO Grader VALUES (2001, 'i1');
 
 -- Also test that this works for total weights > 1.0
-INSERT INTO RubricItem VALUES (4002, 1001, 'style-a1.1', 5, 0.75); -- Weighted Divisor of 39.75
-INSERT INTO RubricItem VALUES (4003, 1001, 'tester-a1.1', 50, 0.75); -- """"
+INSERT INTO RubricItem VALUES (4002, 1001, 'style-A1.1', 5, 0.75); -- Weighted Divisor of 39.75
+INSERT INTO RubricItem VALUES (4003, 1001, 'tester-A1.1', 50, 0.75); -- """"
 INSERT INTO Grade VALUES (2001, 4002, 3);
 INSERT INTO Grade VALUES (2001, 4003, 20);
 INSERT INTO Result VALUES (2001, 17.25, false); -- 3*0.75 + 20*0.75
@@ -78,3 +78,8 @@ INSERT INTO Membership VALUES ('perfect_s2', 9999);
 INSERT INTO Grade VALUES (9999, 4000, 4);
 INSERT INTO Grade VALUES (9999, 4001, 12);
 INSERT INTO Result VALUES (9999, 10, true);
+
+
+
+-- Q6 group with no submissions for A1
+INSERT INTO AssignmentGroup VALUES (5000, 1000, 'no_submissions_url');
