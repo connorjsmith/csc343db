@@ -202,11 +202,36 @@ public class Assignment2 {
      * @return true if successful and false otherwise
      */
 
-    private int createSingleGroup(int assignmentID, string repoPrefix) {
-        // TODO implement this, returning the group_id of the new record
-        String tempRepoURL = "temp_will_be_replaced";
-        String insertGroup = "INSERT INTO AssignmentGroup(assignment_id, repo) VALUES(?, ?) RETURNING group_id"; // returns a uniquely generated group_id
-        String updateInsertedGroup = "UPDATE AssignmentGroup SET repo = ? WHERE group_id = ?"; // update on primary key of AssignmentGroup, guaranteed unique
+    private int getLargestGroupId() throws SQLException, SQLTimeoutException {
+        String largestGroupIdStatement = "SELECT MAX(group_id) FROM AssignmentGroup";
+        int largestGroupId = 0;
+        PreparedStatement ps = connection.prepareStatement(largestGroupIdStatement);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            largestGroupId = rs.getInt(1); // no existing groups (null) will return 0
+        }  
+        return largestGroupId;
+    }
+
+    private void setNextAssignmentGroupSerialValue(int newValue) throws SQLException, SQLTimeoutException {
+        String setSerial = "SELECT setval('assignmentgroup_group_id_seq', ?, false)"; // false so we user newValue for our next insert
+        PreparedStatement ps = connection.prepareStatement(setSerial);
+        ps.setInt(1, newValue);
+        ps.executeQuery();
+    }
+
+    private int autocreateSingleGroup(int assignmentID, String repoPrefix) throws SQLException, SQLTimeoutException {
+        // Set the serial value to be populated by the next insert
+        int thisGroupId = getLargestGroupId() + 1;
+        setNextAssignmentGroupSerialValue(thisGroupId);
+
+        String repo_url = repoPrefix + "/group_" + thisGroupId;
+        String insertGroup = "INSERT INTO AssignmentGroup(assignment_id, repo) VALUES(?, ?)"; // returns a uniquely generated group_id
+        PreparedStatement ps = connection.prepareStatement(insertGroup);
+        ps.setInt(1, assignmentID);
+        ps.setString(2, repo_url);
+        ps.executeUpdate();
+        return thisGroupId;
     }
 
     private boolean addStudentsToGroup(int groupID, ArrayList<String> studentUsernames) {
@@ -229,8 +254,9 @@ public class Assignment2 {
         int maxGroupSizeForAssignment = 0; // TODO: get this value from
 
         // TODO: get student_iterator as a sorted relation as specified in the docstring
+        /*
         while (student_iterator.next()) {
-            int groupID = createSingleGroup(assignmentToGroup, repoPrefix);
+            int groupID = autocreateSingleGroup(assignmentToGroup, repoPrefix);
 
             // get up to maxGroupSizeForAssignment students
             ArrayList<String> studentUsernames = new ArrayList();
@@ -243,6 +269,7 @@ public class Assignment2 {
             boolean success = addStudentsToGroup(groupID, studentUsernames);
             if (!success) return false;
         }
+        */
 
         
         return false;
@@ -266,14 +293,14 @@ public class Assignment2 {
         }
 
         System.out.println("TEST CASE: Adding a new grader for a group");
-        result = a2.assignGrader(2001, "i1");
+        result = a2.assignGrader(2002, "i1");
         if (result != true) {
             System.out.println("FAILED!");
             return false;
         }
 
         System.out.println("TEST CASE: Failing to add a new grader because they are not a TA or Prof");
-        result = a2.assignGrader(2001, "s1");
+        result = a2.assignGrader(2002, "s1");
         if (result != false) {
             System.out.println("FAILED!");
             return false;
@@ -313,16 +340,55 @@ public class Assignment2 {
             System.out.println("FAILED!");
             return false;
         }
-
+        System.out.println("\nPassed test 'testAssignGrader'");
         return true; // all tests passed
     }
 
     public static boolean testRecordMember() {
+        System.out.println("\n\nStarting test 'testRecordMember'\n");
         return false;
     }
 
     public static boolean testCreateGroups() {
-        return false;
+        System.out.println("\n\nStarting test 'testCreateGroups'\n");
+        Assignment2 a2;
+        boolean result;
+        try {
+            a2 = new Assignment2();
+        } catch (SQLException e) {
+            System.out.println("Got constructor exception " + e);
+            System.out.println("FAILED!");return false;
+        }
+        System.out.println("Connecting to DB");
+        result = a2.connectDB("jdbc:postgresql://localhost:5432/csc343h-smithc63", "smithc63", "");
+        if (result != true) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        try {
+            System.out.println("TEST CASE: auotCreateSignleGroup correctly generates serial fields");
+            int first = a2.autocreateSingleGroup(1000,"test_repo_prefix");
+            int second = a2.autocreateSingleGroup(1000,"test_repo_prefix");
+            int third = a2.autocreateSingleGroup(1001,"test_repo_prefix");
+            if (first != second - 1 || first != third - 2) {
+                System.out.println("FAILED!");
+                return false;
+            }
+            // TODO test other helper functions here
+        } catch (SQLException e) {
+            System.out.println("FAILED! Got exception: " + e.getMessage());
+            return false;
+        }
+
+        System.out.println("Disconnecting from DB");
+        result = a2.disconnectDB();
+        if (result != true) {
+            System.out.println("FAILED!");
+            return false;
+        }
+        System.out.println("\nPassed test 'testCreateGroups");
+        return true;
     }
 
     public static void main(String[] args) {
@@ -332,12 +398,12 @@ public class Assignment2 {
             System.out.println("\n\ntestAssignGrader failed one or more tests!");
             return;
         }
-        if(!testRecordMember()){
-            System.out.println("\n\ntestRecordMember failed one or more tests!");
-            return;
-        }
         if(!testCreateGroups()){
             System.out.println("\n\ntestCreateGroups failed one or more tests!");
+            return;
+        }
+        if(!testRecordMember()){
+            System.out.println("\n\ntestRecordMember failed one or more tests!");
             return;
         }
     }
