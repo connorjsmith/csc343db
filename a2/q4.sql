@@ -36,8 +36,8 @@ CREATE VIEW AssignmentGraderGroupMark AS (
     FROM AssignmentDivisors ad -- For weighted_divisor for assignment_id
         JOIN AssignmentGroup ag -- To map between group_id and assignment_id
             ON ad.assignment_id = ag.assignment_id
-		JOIN Grader g -- For grader/group associations, grader username
-			ON g.group_id = ag.group_id
+	JOIN Grader g -- For grader/group associations, grader username
+		ON g.group_id = ag.group_id
         LEFT JOIN Result r -- For mark (possibly no mark recorded for that group yet)
             ON ag.group_id = r.group_id
 );
@@ -56,15 +56,5 @@ CREATE VIEW AssignmentGraderCountMinMaxMark AS (
 	GROUP BY assignment_id, username
 );
 
--- SELECT * FROM AssignmentGraderGroupMark; TODO remove
--- SELECT * FROM AssignmentGraderCountMinMaxMark; TODO remove
-
 -- Final answer.
 INSERT INTO q4 (SELECT * FROM AssignmentGraderCountMinMaxMark);
-
-SELECT * FROM q4; -- TODO remove
-
-
-
-
-

@@ -20,11 +20,11 @@ CREATE TABLE q1 (
 -- that define your intermediate steps.  (But give them better names!)
 
 -- Reset all views
-DROP VIEW IF EXISTS CountedBucketStudentPercentages;
-DROP VIEW IF EXISTS BucketedStudentPercentages;
-DROP VIEW IF EXISTS StudentPercentageGrade;
-DROP VIEW IF EXISTS GroupAssignmentPercentageGrade;
-DROP VIEW IF EXISTS AssignmentDivisors;
+DROP VIEW IF EXISTS CountedBucketStudentPercentages CASCADE;
+DROP VIEW IF EXISTS BucketedStudentPercentages CASCADE;
+DROP VIEW IF EXISTS StudentPercentageGrade CASCADE;
+DROP VIEW IF EXISTS GroupAssignmentPercentageGrade CASCADE;
+DROP VIEW IF EXISTS AssignmentDivisors CASCADE;
 
 -- Define views for intermediate results
 CREATE VIEW AssignmentDivisors AS (

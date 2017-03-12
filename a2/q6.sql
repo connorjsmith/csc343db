@@ -79,16 +79,6 @@ CREATE VIEW first_last_submissions_per_group AS (
     FROM first_submissions_per_group first JOIN last_submissions_per_group last
         ON first.group_id = last.group_id
 );
--- SELECT * FROM AssignmentGroupSubmissions; -- TODO remove
--- SELECT * FROM first_submissions_per_group; -- TODO remove
--- SELECT * FROM last_submissions_per_group; -- TODO remove
-
 
 -- Final answer.
 INSERT INTO q6 (SELECT * FROM first_last_submissions_per_group);
--- SELECT * FROM q6; -- TODO remove
-    -- put a final query here so that its results will go into the table.
-
-
-
-

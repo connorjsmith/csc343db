@@ -48,7 +48,7 @@ CREATE VIEW StudentAssignmentGroupMark AS (
             ON ag.group_id = m.group_id
 );
 
--- CREATE VIEW StudentAssignmentGroupMark AS ( TODO ); -- contains student_user | assignment_id | group_id | mark
+-- CREATE VIEW StudentAssignmentGroupMark AS ( ... ); -- contains student_user | assignment_id | group_id | mark
 CREATE VIEW AssignmentGroupMarkSize AS (
     SELECT assignment_id, group_id, mark, COUNT(group_id) as group_size
     FROM StudentAssignmentGroupMark
@@ -64,7 +64,7 @@ CREATE VIEW SoloAssignmentGroupMark AS (
         WHERE group_size = 1
     ) solo ON a.assignment_id = solo.assignment_id
 );
--- avg(null) should return null
+-- avg(null) returns null
 CREATE VIEW SoloAssignmentAverages AS (
     SELECT assignment_id, avg(mark) as average_mark_for_solo
     FROM SoloAssignmentGroupMark
@@ -80,7 +80,7 @@ CREATE VIEW TeamedAssignmentGroupMark AS (
         WHERE group_size > 1
     ) team ON a.assignment_id = team.assignment_id
 );
--- avg(null) should return null
+-- avg(null) returns null
 CREATE VIEW TeamedAssignmentAverages AS (
     SELECT assignment_id, avg(mark) as average_mark_for_teams
     FROM TeamedAssignmentGroupMark
@@ -88,12 +88,12 @@ CREATE VIEW TeamedAssignmentAverages AS (
 );
 
 CREATE VIEW SoloTeamedAveragesCounts AS (
-    SELECT solo.assignment_id,                              -- All assignments will be present, even with no teams/grades
-           COUNT(DISTINCT solo.group_id) as num_solo,       -- Will return 0 for no solo teams as expected.
-           average_mark_for_solo as average_solo,           -- Will return null for no solo teams
-           SUM(tagm.group_size) as num_collaborators,       -- TODO: will return null. maybe use a case statement here?
-           average_mark_for_teams as average_collaborators, -- Will return null as expected for zero collaborative teams
-           average_students_per_group                       -- TODO: will return null if no teams (solo and collaborative). probably want 0 here with a case statement
+    SELECT solo.assignment_id,                                           -- All assignments will be present, even with no teams/grades
+           COUNT(DISTINCT solo.group_id) as num_solo,                    -- Will return 0 for no solo teams as expected.
+           average_mark_for_solo as average_solo,                        -- Will return null for no solo teams
+           COALESCE(SUM(tagm.group_size), 0) as num_collaborators,       -- Maps null -> 0 for extreme cases
+           average_mark_for_teams as average_collaborators,              -- Will return null as expected for zero collaborative teams
+           average_students_per_group                       	         -- Will be null if no groups declared (as expected)
     FROM SoloAssignmentGroupMark solo
          LEFT JOIN SoloAssignmentAverages saa ON solo.assignment_id = saa.assignment_id
          LEFT JOIN TeamedAssignmentGroupMark tagm ON solo.assignment_id = tagm.assignment_id

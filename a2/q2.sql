@@ -101,15 +101,5 @@ CREATE VIEW NamedAverageAllAssignmentsSpread AS (
     FROM GraderAverageAllAssignmentsSpread l JOIN MarkusUser r ON l.username = r.username
 );
     
-SELECT * FROM GraderAssignmentGroupMarkDate;
-SELECT * FROM AssignmentTenAveragesForGraders;
-SELECT * FROM NotGraderForAllAssignments;
-SELECT * FROM NotSoftGraders;
-SELECT * FROM GraderFirstAssignment;
-SELECT * FROM GraderLastAssignment;
-SELECT * FROM GraderAverageAllAssignmentsSpread;
-SELECT * FROM NamedAverageAllAssignmentsSpread;
-
 -- Final answer.
 INSERT INTO q2 (SELECT * FROM NamedAverageAllAssignmentsSpread);
-SELECT * FROM q2; -- TODO: remove
