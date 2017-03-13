@@ -116,14 +116,32 @@ public class Assignment2 {
             ps = connection.prepareStatement(insert);
             ps.setString(1, grader);
             ps.setInt(2, groupID);
-            System.out.println("Executing <" + insert + "> with params (" + groupID + ", " + grader + ")");
+            System.out.println("Executing <" + insert + "> with params (" + groupID + ", " + grader + ")"); // TODO remove?
             // rs = ps.executeQuery();
         } catch (SQLException se) {
             // We got an error, return false
-            System.err.println("SQL Exception.<Message>: " + se.getMessage());
+            System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
             return false;
         }
         return true;
+    }
+
+    /** Helper function for recordMember and createGroups */
+    // TODO: test this method
+    private int getMaxGroupSize(int assignmentID) {
+        try {
+            String assignmentMaxGroupSizeQuery = "SELECT group_max FROM Assignment WHERE assignment_id = ?";
+            ps = connection.prepareStatement(assignmentMaxGroupSizeQuery);
+            ps.setInt(1, assignmentID);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // something weird happened, return false
+            }
+            int maxGroupSize = rs.getInt();
+        } catch (Exception e) {
+            return -1;
+        }
+        return maxGroupSize;
     }
 
     /**
@@ -146,19 +164,122 @@ public class Assignment2 {
      *            username of the new member to be added to the group
      * @return true if the operation was successful, false otherwise
      */
+    // TODO: tests
     public boolean recordMember(int assignmentID, int groupID, String newMember) {
-        // TODO: replace this return statement with an implementation of this method!
-        String studentAlreadyInGroup = "TODO";
+        // Check if the student is already in the group
+        PreparedStatemnt ps;
+        ResultSet rs;
+        try {
+            String assignmentDoesNotExist = "SELECT assignment_id FROM Assignment WHERE assignment_id = ?";
+            ps = connection.prepareStatement(newMemberNotValidStudent);
+            ps.setInt(1, assignmentID);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // assignment doesn't exist
+            }
 
-        String groupAtCapacity = "TODO";
+            String groupDeclaredForAssignment = "SELECT group_id \
+                                                FROM AssignmentGroup
+                                                WHERE group_id = ? AND assignment_id = ?";
+            ps = connection.prepareStatement(groupDeclaredForAssignment);
+            ps.setInt(1, groupID);
+            ps.setInt(2, assignmentID);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // the group has not been declared for this assignment
+            }
 
-        String newMemberNotValidStudent = "TODO";
+            String studentAlreadyInGroup = "SELECT group_id \
+                                            FROM Membership \
+                                            WHERE username = ? AND group_id = ?";
+            ps = connection.prepareStatement(studentAlreadyInGroup);
+            ps.setString(1, newMember);
+            ps.setInt(2, groupID);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return false; // the user is already in the group
+            }
 
-        String assignmentDoesNotExist = "TODO";
+            String currentGroupSizeQuery = "SELECT COUNT(*) FROM AssignmentGroup WHERE group_id = ?";
+            ps = connection.prepareStatement(currentGroupSizeQuery);
+            ps.setInt(1, groupID);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // something weird happened, return false
+            }
+            int currentGroupSize = rs.getInt();
 
-        String groupIDNotDeclaredForAssignment = "TODO";
+            int maxGroupSize = getMaxGroupSize(assignmentID);
+            if (maxGroupSize <= currentGroupSize) {
+                return false; // the group is full, or there was an error finding the max group size for this assignment
+            }
+
+            String newMemberNotValidStudent = "SELECT username FROM MarkusUser WHERE username = ? AND type = 'student'";
+            ps = connection.prepareStatement(newMemberNotValidStudent);
+            ps.setString(1, newMember);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // newMember is not a student username
+            }
+
+            String insertStudentToGroup = "INSERT INTO Membership (username, group_id) VALUES (?, ?)";
+            ps = connection.prepareStatement(newMemberNotValidStudent);
+            ps.setString(1, newMember);
+            ps.setInt(2, groupID);
+            int result = ps.executeUpdate();
+        } catch (SQLException e) {
+            return false; // something broke or the insert failed
+        } catch (SQLTimeoutException e) {
+            return false; // something broke or the insert failed
+        }
+
+        // everything worked
+        return true;
+    }
+
+    /** Helper functions for createGroups */
+    private int getLargestGroupId() throws SQLException, SQLTimeoutException {
+        String largestGroupIdStatement = "SELECT MAX(group_id) FROM AssignmentGroup";
+        int largestGroupId = 0;
+        PreparedStatement ps = connection.prepareStatement(largestGroupIdStatement);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            largestGroupId = rs.getInt(1); // no existing groups (null) will return 0
+        }  
+        return largestGroupId;
+    }
+
+    private void setNextAssignmentGroupSerialValue(int newValue) throws SQLException, SQLTimeoutException {
+        String setSerial = "SELECT setval('assignmentgroup_group_id_seq', ?, false)"; // false so we user newValue for our next insert
+        PreparedStatement ps = connection.prepareStatement(setSerial);
+        ps.setInt(1, newValue);
+        ps.executeQuery();
+    }
+
+    private int autocreateSingleGroup(int assignmentID, String repoPrefix) throws SQLException, SQLTimeoutException {
+        // Set the serial value to be populated by the next insert
+        int thisGroupId = getLargestGroupId() + 1;
+        setNextAssignmentGroupSerialValue(thisGroupId);
+
+        String repoUrl = repoPrefix + "/group_" + thisGroupId;
+        String insertGroup = "INSERT INTO AssignmentGroup(assignment_id, repo) VALUES(?, ?)"; // returns a uniquely generated group_id
+        PreparedStatement ps = connection.prepareStatement(insertGroup);
+        ps.setInt(1, assignmentID);
+        ps.setString(2, repoUrl);
+        ps.executeUpdate();
+        return thisGroupId;
+    }
+
+    private boolean addStudentsToGroup(int groupID, ArrayList<String> studentUsernames) {
+        String insertStudent = "INSERT INTO Membership VALUES (?, ?)";
+        for (String username : studentUsernames) {
+
+
+        }
         return false;
     }
+        
+        
 
     /**
      * Creates student groups for an assignment.
@@ -202,69 +323,25 @@ public class Assignment2 {
      * @return true if successful and false otherwise
      */
 
-    private int getLargestGroupId() throws SQLException, SQLTimeoutException {
-        String largestGroupIdStatement = "SELECT MAX(group_id) FROM AssignmentGroup";
-        int largestGroupId = 0;
-        PreparedStatement ps = connection.prepareStatement(largestGroupIdStatement);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            largestGroupId = rs.getInt(1); // no existing groups (null) will return 0
-        }  
-        return largestGroupId;
-    }
-
-    private void setNextAssignmentGroupSerialValue(int newValue) throws SQLException, SQLTimeoutException {
-        String setSerial = "SELECT setval('assignmentgroup_group_id_seq', ?, false)"; // false so we user newValue for our next insert
-        PreparedStatement ps = connection.prepareStatement(setSerial);
-        ps.setInt(1, newValue);
-        ps.executeQuery();
-    }
-
-    private int autocreateSingleGroup(int assignmentID, String repoPrefix) throws SQLException, SQLTimeoutException {
-        // Set the serial value to be populated by the next insert
-        int thisGroupId = getLargestGroupId() + 1;
-        setNextAssignmentGroupSerialValue(thisGroupId);
-
-        String repo_url = repoPrefix + "/group_" + thisGroupId;
-        String insertGroup = "INSERT INTO AssignmentGroup(assignment_id, repo) VALUES(?, ?)"; // returns a uniquely generated group_id
-        PreparedStatement ps = connection.prepareStatement(insertGroup);
-        ps.setInt(1, assignmentID);
-        ps.setString(2, repo_url);
-        ps.executeUpdate();
-        return thisGroupId;
-    }
-
-    private boolean addStudentsToGroup(int groupID, ArrayList<String> studentUsernames) {
-        String insertStudent = "INSERT INTO Membership VALUES (?, ?)";
-        for (String username : studentUsernames) {
-
-
-        }
-        return false;
-    }
-        
-        
-    public boolean createGroups(int assignmentToGroup, int otherAssignment,
-            String repoPrefix) {
+    public boolean createGroups(int assignmentToGroup, int otherAssignment, String repoPrefix) {
         // TODO: replace this return statement with an implementation of this method!
         String noAssignmentToGroupFound = "TODO";
         String noOtherAssignmentFound = "TODO";
         String otherAssignmentStudentsSorted = "TODO";
-        String maxGroupSizeQuery = "TODO";
-        int maxGroupSizeForAssignment = 0; // TODO: get this value from
+        int maxGroupSizeForAssignment = getMaxGroupSize(assignmentToGroup);
 
-        // TODO: get student_iterator as a sorted relation as specified in the docstring
+        // TODO: get studentIterator as a sorted relation as specified in the docstring
         /*
-        while (student_iterator.next()) {
+        while (studentIterator.next()) {
             int groupID = autocreateSingleGroup(assignmentToGroup, repoPrefix);
 
             // get up to maxGroupSizeForAssignment students
             ArrayList<String> studentUsernames = new ArrayList();
-            studentUseranmes.append(student_iterator.getString("username"));
-            int current_count = 1;
-            while (current_count < maxGroupSizeForAssignment && student_iterator.next()) {
-                current_count++;
-                studentUseranmes.append(student_iterator.getString("username"));
+            studentUseranmes.append(studentIterator.getString("username"));
+            int currentCount = 1;
+            while (currentCount < maxGroupSizeForAssignment && studentIterator.next()) {
+                currentCount++;
+                studentUseranmes.append(studentIterator.getString("username"));
             }
             boolean success = addStudentsToGroup(groupID, studentUsernames);
             if (!success) return false;
