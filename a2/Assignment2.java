@@ -39,7 +39,7 @@ public class Assignment2 {
             Statement searchpathStatement = connection.createStatement();
             searchpathStatement.execute("SET search_path TO markus");
         } catch (SQLException se) {
-            System.err.println("SQL Exception.<Message>: " + se.getMessage());
+            System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO: remove?
             return false;
         }
         return true;
@@ -55,7 +55,7 @@ public class Assignment2 {
         try {
             connection.close();
         } catch (SQLException se) {
-            System.err.println("SQL Exception.<Message>: " + se.getMessage());
+            System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
             return false;
         }
         return true;
@@ -87,7 +87,7 @@ public class Assignment2 {
             if (rs.next()) {
                 // Since the Grader.username column references a primary key, it cannot be NULL
                 // Therefore this groupID already has a grader
-                System.out.println("Group '" + groupID + "' already has a grader");
+                System.out.println("Group '" + groupID + "' already has a grader"); // TODO remove?
                 return false;
             }
 
@@ -97,7 +97,7 @@ public class Assignment2 {
             ps.setString(1, grader);
             rs = ps.executeQuery();
             if (!rs.next()) {
-                System.out.println("The grader '" + grader + "' is not a Prof or TA");
+                System.out.println("The grader '" + grader + "' is not a Prof or TA"); // TODO remove?
                 return false; // The grader is not a TA or Prof, or is not a Markus User
             }
 
@@ -107,7 +107,7 @@ public class Assignment2 {
             ps.setInt(1, groupID);
             rs = ps.executeQuery();
             if (!rs.next()) {
-                System.out.println("Group '" + groupID + "' does not exist");
+                System.out.println("Group '" + groupID + "' does not exist"); // TODO remove?
                 return false; // The group does not exist
             }
 
