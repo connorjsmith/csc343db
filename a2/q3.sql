@@ -24,7 +24,7 @@ CREATE TABLE q3 (
     average_solo real,
     num_collaborators integer, 
     average_collaborators real, 
-    average_students_per_group real
+    average_students_per_submission real
 );
 
 -- Define views for your intermediate steps here
@@ -93,7 +93,7 @@ CREATE VIEW SoloTeamedAveragesCounts AS (
            average_mark_for_solo as average_solo,                        -- Will return null for no solo teams
            COALESCE(SUM(tagm.group_size), 0) as num_collaborators,       -- Maps null -> 0 for extreme cases
            average_mark_for_teams as average_collaborators,              -- Will return null as expected for zero collaborative teams
-           average_students_per_group                       	         -- Will be null if no groups declared (as expected)
+           average_students_per_group                                    -- Will be null if no groups declared (as expected)
     FROM SoloAssignmentGroupMark solo
          LEFT JOIN SoloAssignmentAverages saa ON solo.assignment_id = saa.assignment_id
          LEFT JOIN TeamedAssignmentGroupMark tagm ON solo.assignment_id = tagm.assignment_id
