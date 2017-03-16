@@ -3,6 +3,7 @@ import java.sql.*;
 // Remember that part of your mark is for doing as much in SQL (not Java) 
 // as you can. At most you can justify using an array, or the more flexible
 // ArrayList. Don't go crazy with it, though. You need it rarely if at all.
+import java.util.Iterator;
 import java.util.ArrayList;
 
 public class Assignment2 {
@@ -127,21 +128,19 @@ public class Assignment2 {
     }
 
     /** Helper function for recordMember and createGroups */
-    // TODO: test this method
     private int getMaxGroupSize(int assignmentID) {
         try {
             String assignmentMaxGroupSizeQuery = "SELECT group_max FROM Assignment WHERE assignment_id = ?";
-            ps = connection.prepareStatement(assignmentMaxGroupSizeQuery);
+            PreparedStatement ps = connection.prepareStatement(assignmentMaxGroupSizeQuery);
             ps.setInt(1, assignmentID);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
-                return false; // something weird happened, return false
+                return -1; // something weird happened, return
             }
-            int maxGroupSize = rs.getInt();
-        } catch (Exception e) {
+            return rs.getInt(1);
+        } catch (SQLException e) {
             return -1;
         }
-        return maxGroupSize;
     }
 
     /**
@@ -167,51 +166,15 @@ public class Assignment2 {
     // TODO: tests
     public boolean recordMember(int assignmentID, int groupID, String newMember) {
         // Check if the student is already in the group
-        PreparedStatemnt ps;
+        PreparedStatement ps;
         ResultSet rs;
         try {
             String assignmentDoesNotExist = "SELECT assignment_id FROM Assignment WHERE assignment_id = ?";
-            ps = connection.prepareStatement(newMemberNotValidStudent);
+            ps = connection.prepareStatement(assignmentDoesNotExist);
             ps.setInt(1, assignmentID);
             rs = ps.executeQuery();
             if (!rs.next()) {
                 return false; // assignment doesn't exist
-            }
-
-            String groupDeclaredForAssignment = "SELECT group_id \
-                                                FROM AssignmentGroup
-                                                WHERE group_id = ? AND assignment_id = ?";
-            ps = connection.prepareStatement(groupDeclaredForAssignment);
-            ps.setInt(1, groupID);
-            ps.setInt(2, assignmentID);
-            rs = ps.executeQuery();
-            if (!rs.next()) {
-                return false; // the group has not been declared for this assignment
-            }
-
-            String studentAlreadyInGroup = "SELECT group_id \
-                                            FROM Membership \
-                                            WHERE username = ? AND group_id = ?";
-            ps = connection.prepareStatement(studentAlreadyInGroup);
-            ps.setString(1, newMember);
-            ps.setInt(2, groupID);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                return false; // the user is already in the group
-            }
-
-            String currentGroupSizeQuery = "SELECT COUNT(*) FROM AssignmentGroup WHERE group_id = ?";
-            ps = connection.prepareStatement(currentGroupSizeQuery);
-            ps.setInt(1, groupID);
-            rs = ps.executeQuery();
-            if (!rs.next()) {
-                return false; // something weird happened, return false
-            }
-            int currentGroupSize = rs.getInt();
-
-            int maxGroupSize = getMaxGroupSize(assignmentID);
-            if (maxGroupSize <= currentGroupSize) {
-                return false; // the group is full, or there was an error finding the max group size for this assignment
             }
 
             String newMemberNotValidStudent = "SELECT username FROM MarkusUser WHERE username = ? AND type = 'student'";
@@ -222,14 +185,44 @@ public class Assignment2 {
                 return false; // newMember is not a student username
             }
 
+            String groupDeclaredForAssignment = "SELECT group_id FROM AssignmentGroup WHERE group_id = ? AND assignment_id = ?";
+            ps = connection.prepareStatement(groupDeclaredForAssignment);
+            ps.setInt(1, groupID);
+            ps.setInt(2, assignmentID);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // the group has not been declared for this assignment
+            }
+
+            String studentAlreadyInGroup = "SELECT group_id FROM Membership WHERE username = ? AND group_id = ?";
+            ps = connection.prepareStatement(studentAlreadyInGroup);
+            ps.setString(1, newMember);
+            ps.setInt(2, groupID);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return false; // the user is already in the group
+            }
+
+            String currentGroupSizeQuery = "SELECT COUNT(*) FROM Membership WHERE group_id = ?";
+            ps = connection.prepareStatement(currentGroupSizeQuery);
+            ps.setInt(1, groupID);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // something weird happened, return false
+            }
+            int currentGroupSize = rs.getInt(1);
+
+            int maxGroupSize = getMaxGroupSize(assignmentID);
+            if (maxGroupSize <= currentGroupSize) {
+                return false; // the group is full, or there was an error finding the max group size for this assignment
+            }
+
             String insertStudentToGroup = "INSERT INTO Membership (username, group_id) VALUES (?, ?)";
             ps = connection.prepareStatement(newMemberNotValidStudent);
             ps.setString(1, newMember);
             ps.setInt(2, groupID);
             int result = ps.executeUpdate();
         } catch (SQLException e) {
-            return false; // something broke or the insert failed
-        } catch (SQLTimeoutException e) {
             return false; // something broke or the insert failed
         }
 
@@ -270,16 +263,44 @@ public class Assignment2 {
         return thisGroupId;
     }
 
-    private boolean addStudentsToGroup(int groupID, ArrayList<String> studentUsernames) {
-        String insertStudent = "INSERT INTO Membership VALUES (?, ?)";
+    private boolean addStudentsToGroup(int assignmentID, int groupID, ArrayList<String> studentUsernames) {
         for (String username : studentUsernames) {
-
-
+            if(!recordMember(assignmentID, groupID, username)) {
+                return false; // something went wrong
+            }
         }
-        return false;
+        return true;
     }
         
-        
+    ArrayList<String> getSortedStudentList(int otherAssignment) {
+        ArrayList<String> sortedStudentList = new ArrayList<String>();
+        /*
+        SELECT username
+        FROM MarkusUsers markus
+            LEFT JOIN (
+                SELECT username, mark
+                FROM Membership m
+                    JOIN Result r ON m.group_id = r.group_id
+                    JOIN AssignmentGroup ag ON m.group_id = ag.group_id
+                WHERE assignment_id = ?
+            ) AS markedUsers ON markus.username = markedUsers.username
+        WHERE type = 'student'
+        ORDER BY mark DESC NULLS LAST, username ASC
+        */
+        try {
+            String sortedStudentQuery = " SELECT username FROM MarkusUsers markus LEFT JOIN ( SELECT username, mark FROM Membership m JOIN Result r ON m.group_id = r.group_id JOIN AssignmentGroup ag ON m.group_id = ag.group_id WHERE assignment_id = ?) AS markedUsers ON markus.username = markedUsers.username WHERE type = 'student' ORDER BY mark DESC NULLS LAST, username ASC";
+            PreparedStatement ps = connection.prepareStatement(sortedStudentQuery);
+            ps.setInt(1, otherAssignment);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                sortedStudentList.add(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            // something happened while reading from the table
+            // swallow the exception and return the list so far (probably empty)
+        }
+        return sortedStudentList; // will return empty list if there are no students with grades for the assignment
+    }
 
     /**
      * Creates student groups for an assignment.
@@ -324,38 +345,39 @@ public class Assignment2 {
      */
 
     public boolean createGroups(int assignmentToGroup, int otherAssignment, String repoPrefix) {
-        // TODO: replace this return statement with an implementation of this method!
-        String noAssignmentToGroupFound = "TODO";
-        String noOtherAssignmentFound = "TODO";
-        String otherAssignmentStudentsSorted = "TODO";
+        String assignmentFound = "SELECT assignment_id FROM Assignment WHERE assignment_id = ?";
+        String groupsForAssignmentExist = "SELECT group_id FROM AssignmentGroup WHERE assignment_id = ?";
+        try {
+        // TODO if !assignmentFound(assignmentToGroup) || !assignmentFound(otherAssignment) return false;
+        // TODO if groupsforAssignmentExist return false;
         int maxGroupSizeForAssignment = getMaxGroupSize(assignmentToGroup);
 
-        // TODO: get studentIterator as a sorted relation as specified in the docstring
-        /*
-        while (studentIterator.next()) {
+        ArrayList<String> studentList = getSortedStudentList(otherAssignment);
+        Iterator<String> studentIterator = studentList.iterator();
+        while (studentIterator.hasNext()) {
             int groupID = autocreateSingleGroup(assignmentToGroup, repoPrefix);
 
             // get up to maxGroupSizeForAssignment students
             ArrayList<String> studentUsernames = new ArrayList();
-            studentUseranmes.append(studentIterator.getString("username"));
+            studentUsernames.add(studentIterator.next());
             int currentCount = 1;
-            while (currentCount < maxGroupSizeForAssignment && studentIterator.next()) {
+            while (currentCount < maxGroupSizeForAssignment && studentIterator.hasNext()) {
                 currentCount++;
-                studentUseranmes.append(studentIterator.getString("username"));
+                studentUsernames.add(studentIterator.next());
             }
-            boolean success = addStudentsToGroup(groupID, studentUsernames);
+            boolean success = addStudentsToGroup(assignmentToGroup, groupID, studentUsernames);
             if (!success) return false;
         }
-        */
-
-        
-        return false;
+        } catch (SQLException e) {
+            // someting went wrong
+            return false;
+        }
+        return true; // everything seems to have worked
     }
 
     public static boolean testAssignGrader() {
         System.out.println("\n\nStarting test 'testAssignGrader'\n");
         Assignment2 a2;
-        boolean result; // TODO remove this
         try {
             a2 = new Assignment2();
         } catch (SQLException e) {
@@ -363,7 +385,7 @@ public class Assignment2 {
             System.out.println("FAILED!");return false;
         }
         System.out.println("Connecting to DB");
-        result = a2.connectDB("jdbc:postgresql://localhost:5432/csc343h-smithc63", "smithc63", "");
+        boolean result = a2.connectDB("jdbc:postgresql://localhost:5432/csc343h-smithc63", "smithc63", "");
         if (result != true) {
             System.out.println("FAILED!");
             return false;
@@ -423,7 +445,54 @@ public class Assignment2 {
 
     public static boolean testRecordMember() {
         System.out.println("\n\nStarting test 'testRecordMember'\n");
-        return false;
+        Assignment2 a2;
+        try {
+            a2 = new Assignment2();
+        } catch (Exception e) {
+            System.out.println("Got a constructor exception " + e);
+            System.out.println("FAILED!");
+            return false;
+        }
+        System.out.println("Connecting to DB");
+        boolean result = a2.connectDB("jdbc:postgresql://localhost:5432/csc343h-smithc63", "smithc63", "");
+        if (result != true) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("TEST CASE: getMaxGroupSize works for normal input");
+        int groupSize = a2.getMaxGroupSize(1000);
+        if (groupSize != 2) {
+            System.out.println("FAILED! Got Result " + groupSize + ", expected 2");
+            return false;
+        }
+
+        System.out.println("TEST CASE: getMaxGroupSize handles a not found group properly");
+        groupSize = a2.getMaxGroupSize(15698312); // group id doesn't exist
+        if (groupSize > 0) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        // TODO tests for recordMember
+        System.out.println("TEST CASE: recordMember works for normal input");
+        System.out.println("TEST CASE: recordMember fails for non-existent assignment");
+        System.out.println("TEST CASE: recordMember fails for non-existent group");
+        System.out.println("TEST CASE: recordMember fails for non-existent username");
+        System.out.println("TEST CASE: recordMember fails for non-student username");
+        System.out.println("TEST CASE: recordMember fails for a full group");
+
+
+        System.out.println("Disconnecting from DB");
+        result = a2.disconnectDB();
+        if (result != true) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        return false; // needs more tests
+        // System.out.println("\nPassed test 'testAssignGrader'");
+        // return true; // all tests passed
     }
 
     public static boolean testCreateGroups() {
