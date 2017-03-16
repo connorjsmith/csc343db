@@ -21,7 +21,7 @@ CREATE TABLE q1 (
 
 -- Reset all views
 DROP VIEW IF EXISTS CountedBucketStudentPercentages CASCADE;
-DROP VIEW IF EXISTS BucketedStudentPercentages CASCADE;
+DROP VIEW IF EXISTS BucketedGroupPercentages CASCADE;
 DROP VIEW IF EXISTS StudentPercentageGrade CASCADE;
 DROP VIEW IF EXISTS GroupAssignmentPercentageGrade CASCADE;
 DROP VIEW IF EXISTS AssignmentDivisors CASCADE;
@@ -31,7 +31,7 @@ DROP VIEW IF EXISTS AssignmentDivisors CASCADE;
 CREATE VIEW AssignmentDivisors AS (
     SELECT Assignment.assignment_id, SUM(partial_divisor) AS weighted_divisor
     FROM Assignment LEFT JOIN (
-        SELECT assignment_id, rubric_id, (out_of * weight) as partial_divisor
+        SELECT assignment_id, (out_of * weight) as partial_divisor
         FROM RubricItem
     ) AS IntermediateResult on Assignment.assignment_id = IntermediateResult.assignment_id
     GROUP BY Assignment.assignment_id
@@ -51,23 +51,16 @@ CREATE VIEW GroupAssignmentPercentageGrade AS (
             ON ag.group_id = r.group_id
 );
 
--- Pad with nulls for Assignments without members
-CREATE VIEW StudentPercentageGrade AS (
-    SELECT assignment_id, username, percentage
-    FROM GroupAssignmentPercentageGrade g 
-        LEFT JOIN Membership m -- If no members found, will have (assignment_id, null, percentage?)
-            ON g.group_id = m.group_id
-);
-
-CREATE VIEW BucketedStudentPercentages AS (
+-- Classify each group's grade into one of the buckets
+-- All buckets will be 0 for a group with no grade
+CREATE VIEW BucketedGroupPercentages AS (
     SELECT assignment_id, -- not null
-           username, -- nullable
            percentage, -- null percentage -> all 0 columns
            (CASE WHEN (percentage >= 80 AND percentage <= 100) THEN 1 ELSE 0 END) as bool80_100, -- TODO: include grades over 100?
            (CASE WHEN (percentage >= 60 AND percentage < 80) THEN 1 ELSE 0 END) as bool60_79,
            (CASE WHEN (percentage >= 50 AND percentage < 60) THEN 1 ELSE 0 END) as bool50_59,
-           (CASE WHEN (percentage < 50) THEN 1 ELSE 0 END) as bool_50 -- TODO: exclude grades < 0?
-    FROM StudentPercentageGrade
+           (CASE WHEN (percentage < 50) THEN 1 ELSE 0 END) as bool_50
+    FROM GroupAssignmentPercentageGrade
 );
 
 CREATE VIEW CountedBucketStudentPercentages AS (
@@ -77,9 +70,8 @@ CREATE VIEW CountedBucketStudentPercentages AS (
            sum(bool60_79) as num_60_79,
            sum(bool50_59) as num_50_59,
            sum(bool_50) as num_0_49
-    FROM BucketedStudentPercentages
+    FROM BucketedGroupPercentages
     GROUP BY assignment_id
-
-);    
+);
 
 INSERT INTO q1 (SELECT * FROM CountedBucketStudentPercentages);
