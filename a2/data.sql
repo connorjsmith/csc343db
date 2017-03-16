@@ -55,7 +55,6 @@ INSERT INTO AssignmentGroup VALUES (2002, 1, 'repo_url1');
 INSERT INTO RubricItem VALUES (4004, 1, 'style-ungraded', 5, 0.75); -- Weighted Divisor of 39.75
 INSERT INTO RubricItem VALUES (4005, 1, 'tester-ungraded', 50, 0.75); -- """"
 INSERT INTO Membership VALUES ('s3', 2002);
-INSERT INTO Membership VALUES ('s4', 2002);
 
 -- Add another Assignment, AssignmentGroup, members, RubricItems, and Grades
 INSERT INTO Assignment VALUES (1001, 'A1.1', '2017-02-09 20:00', 1, 2);

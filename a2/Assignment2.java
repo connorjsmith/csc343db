@@ -40,7 +40,7 @@ public class Assignment2 {
             Statement searchpathStatement = connection.createStatement();
             searchpathStatement.execute("SET search_path TO markus");
         } catch (SQLException se) {
-            System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO: remove?
+            // System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO: remove?
             return false;
         }
         return true;
@@ -52,11 +52,10 @@ public class Assignment2 {
      * @return true if the closing was successful, false otherwise
      */
     public boolean disconnectDB() {
-        // TODO: replace this return statement with an implementation of this method!
         try {
             connection.close();
         } catch (SQLException se) {
-            System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
+            // System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
             return false;
         }
         return true;
@@ -76,7 +75,6 @@ public class Assignment2 {
      * @return true if the operation was successful, false otherwise
      */
     public boolean assignGrader(int groupID, String grader) {
-        // TODO: replace this return statement with an implementation of this method!
         PreparedStatement ps;
         ResultSet rs;
         try {
@@ -88,7 +86,7 @@ public class Assignment2 {
             if (rs.next()) {
                 // Since the Grader.username column references a primary key, it cannot be NULL
                 // Therefore this groupID already has a grader
-                System.out.println("Group '" + groupID + "' already has a grader"); // TODO remove?
+                // System.out.println("Group '" + groupID + "' already has a grader"); // TODO remove?
                 return false;
             }
 
@@ -98,7 +96,7 @@ public class Assignment2 {
             ps.setString(1, grader);
             rs = ps.executeQuery();
             if (!rs.next()) {
-                System.out.println("The grader '" + grader + "' is not a Prof or TA"); // TODO remove?
+                // System.out.println("The grader '" + grader + "' is not a Prof or TA"); // TODO remove?
                 return false; // The grader is not a TA or Prof, or is not a Markus User
             }
 
@@ -108,7 +106,7 @@ public class Assignment2 {
             ps.setInt(1, groupID);
             rs = ps.executeQuery();
             if (!rs.next()) {
-                System.out.println("Group '" + groupID + "' does not exist"); // TODO remove?
+                // System.out.println("Group '" + groupID + "' does not exist"); // TODO remove?
                 return false; // The group does not exist
             }
 
@@ -117,11 +115,11 @@ public class Assignment2 {
             ps = connection.prepareStatement(insert);
             ps.setString(1, grader);
             ps.setInt(2, groupID);
-            System.out.println("Executing <" + insert + "> with params (" + groupID + ", " + grader + ")"); // TODO remove?
+            // System.out.println("Executing <" + insert + "> with params (" + groupID + ", " + grader + ")"); // TODO remove?
             // rs = ps.executeQuery();
         } catch (SQLException se) {
             // We got an error, return false
-            System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
+            // System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
             return false;
         }
         return true;
@@ -163,7 +161,6 @@ public class Assignment2 {
      *            username of the new member to be added to the group
      * @return true if the operation was successful, false otherwise
      */
-    // TODO: tests
     public boolean recordMember(int assignmentID, int groupID, String newMember) {
         // Check if the student is already in the group
         PreparedStatement ps;
@@ -200,7 +197,7 @@ public class Assignment2 {
             ps.setInt(2, groupID);
             rs = ps.executeQuery();
             if (rs.next()) {
-                return false; // the user is already in the group
+                return true; // the user is already in the group, return true
             }
 
             String currentGroupSizeQuery = "SELECT COUNT(*) FROM Membership WHERE group_id = ?";
@@ -218,11 +215,12 @@ public class Assignment2 {
             }
 
             String insertStudentToGroup = "INSERT INTO Membership (username, group_id) VALUES (?, ?)";
-            ps = connection.prepareStatement(newMemberNotValidStudent);
+            ps = connection.prepareStatement(insertStudentToGroup);
             ps.setString(1, newMember);
             ps.setInt(2, groupID);
-            int result = ps.executeUpdate();
+            ps.executeUpdate();
         } catch (SQLException e) {
+            // System.out.println("Caught SQL exception " + e);
             return false; // something broke or the insert failed
         }
 
@@ -474,25 +472,61 @@ public class Assignment2 {
             return false;
         }
 
-        // TODO tests for recordMember
-        System.out.println("TEST CASE: recordMember works for normal input");
         System.out.println("TEST CASE: recordMember fails for non-existent assignment");
+        result = a2.recordMember(21300, 2002, "s4");
+        if (result) {
+            System.out.println("FAILED!");
+            return false;
+        }
         System.out.println("TEST CASE: recordMember fails for non-existent group");
+        result = a2.recordMember(1000, 9002, "s4");
+        if (result) {
+            System.out.println("FAILED!");
+            return false;
+        }
         System.out.println("TEST CASE: recordMember fails for non-existent username");
+        result = a2.recordMember(1000, 2002, "does_not_exist");
+        if (result) {
+            System.out.println("FAILED!");
+            return false;
+        }
         System.out.println("TEST CASE: recordMember fails for non-student username");
-        System.out.println("TEST CASE: recordMember fails for a full group");
-
-
-        System.out.println("Disconnecting from DB");
-        result = a2.disconnectDB();
-        if (result != true) {
+        result = a2.recordMember(1000, 2002, "i1");
+        if (result) {
             System.out.println("FAILED!");
             return false;
         }
 
-        return false; // needs more tests
-        // System.out.println("\nPassed test 'testAssignGrader'");
-        // return true; // all tests passed
+        System.out.println("TEST CASE: recordMember works for normal input");
+        result = a2.recordMember(1, 2002, "s4");
+        if (!result) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("TEST CASE: recordMember fails for a full group");
+        result = a2.recordMember(1, 2002, "s1");
+        if (result) {
+            System.out.println("FAILED!");
+            return false;
+        }
+            
+        System.out.println("TEST CASE: recordMember works silently for a repeat add");
+        result = a2.recordMember(1, 2002, "s4");
+        if (!result) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("Disconnecting from DB");
+        result = a2.disconnectDB();
+        if (!result) {
+            System.out.println("FAILED!");
+            return false;
+        }
+
+        System.out.println("\nPassed test 'testAssignGrader'");
+        return true; // all tests passed
     }
 
     public static boolean testCreateGroups() {
@@ -533,23 +567,22 @@ public class Assignment2 {
             System.out.println("FAILED!");
             return false;
         }
-        System.out.println("\nPassed test 'testCreateGroups");
-        return true;
+        return false; // TODO NEEDS MORE TESTS
+        // System.out.println("\nPassed test 'testCreateGroups");
+        // return true;
     }
 
     public static void main(String[] args) {
-        // TODO: You can put testing code in here. It will not affect our autotester.
-
         if(!testAssignGrader()){
             System.out.println("\n\ntestAssignGrader failed one or more tests!");
             return;
         }
-        if(!testCreateGroups()){
-            System.out.println("\n\ntestCreateGroups failed one or more tests!");
-            return;
-        }
         if(!testRecordMember()){
             System.out.println("\n\ntestRecordMember failed one or more tests!");
+            return;
+        }
+        if(!testCreateGroups()){
+            System.out.println("\n\ntestCreateGroups failed one or more tests!");
             return;
         }
     }
