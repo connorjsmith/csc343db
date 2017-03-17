@@ -270,7 +270,7 @@ public class Assignment2 {
         return true;
     }
         
-    ArrayList<String> getSortedStudentList(int otherAssignment) {
+    private ArrayList<String> getSortedStudentList(int otherAssignment) {
         ArrayList<String> sortedStudentList = new ArrayList<String>();
         /*
         SELECT username
@@ -343,29 +343,49 @@ public class Assignment2 {
      */
 
     public boolean createGroups(int assignmentToGroup, int otherAssignment, String repoPrefix) {
+        PreparedStatment ps;
+        ResultSet rs;
         String assignmentFound = "SELECT assignment_id FROM Assignment WHERE assignment_id = ?";
         String groupsForAssignmentExist = "SELECT group_id FROM AssignmentGroup WHERE assignment_id = ?";
         try {
-        // TODO if !assignmentFound(assignmentToGroup) || !assignmentFound(otherAssignment) return false;
-        // TODO if groupsforAssignmentExist return false;
-        int maxGroupSizeForAssignment = getMaxGroupSize(assignmentToGroup);
-
-        ArrayList<String> studentList = getSortedStudentList(otherAssignment);
-        Iterator<String> studentIterator = studentList.iterator();
-        while (studentIterator.hasNext()) {
-            int groupID = autocreateSingleGroup(assignmentToGroup, repoPrefix);
-
-            // get up to maxGroupSizeForAssignment students
-            ArrayList<String> studentUsernames = new ArrayList();
-            studentUsernames.add(studentIterator.next());
-            int currentCount = 1;
-            while (currentCount < maxGroupSizeForAssignment && studentIterator.hasNext()) {
-                currentCount++;
-                studentUsernames.add(studentIterator.next());
+            ps = connection.prepareStatement(assignmentFound);
+            ps.setInt(1, assignmentToGroup);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // assignmentToGroup Not found
             }
-            boolean success = addStudentsToGroup(assignmentToGroup, groupID, studentUsernames);
-            if (!success) return false;
-        }
+            ps.setInt(1, otherAssignment);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return false; // otherAssignment Not found
+            }
+
+            ps = connection.prepareStatement(groupsForAssignmentExist);
+            ps.setInt(assignmentToGroup);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return false; // groups for this assignment already exist
+            }
+
+            // AssignmentToGroup and otherAssignment are valid, we can create groups
+            int maxGroupSizeForAssignment = getMaxGroupSize(assignmentToGroup);
+
+            ArrayList<String> studentList = getSortedStudentList(otherAssignment);
+            Iterator<String> studentIterator = studentList.iterator();
+            while (studentIterator.hasNext()) {
+                int groupID = autocreateSingleGroup(assignmentToGroup, repoPrefix);
+
+                // get up to maxGroupSizeForAssignment students
+                ArrayList<String> studentUsernames = new ArrayList();
+                studentUsernames.add(studentIterator.next());
+                int currentCount = 1;
+                while (currentCount < maxGroupSizeForAssignment && studentIterator.hasNext()) {
+                    currentCount++;
+                    studentUsernames.add(studentIterator.next());
+                }
+                boolean success = addStudentsToGroup(assignmentToGroup, groupID, studentUsernames);
+                if (!success) return false;
+            }
         } catch (SQLException e) {
             // someting went wrong
             return false;
@@ -547,7 +567,7 @@ public class Assignment2 {
         }
 
         try {
-            System.out.println("TEST CASE: auotCreateSignleGroup correctly generates serial fields");
+            System.out.println("TEST CASE: autoCreateSignleGroup correctly generates serial fields");
             int first = a2.autocreateSingleGroup(1000,"test_repo_prefix");
             int second = a2.autocreateSingleGroup(1000,"test_repo_prefix");
             int third = a2.autocreateSingleGroup(1001,"test_repo_prefix");
@@ -556,6 +576,13 @@ public class Assignment2 {
                 return false;
             }
             // TODO test other helper functions here
+            ArrayList<String> sortedStudentList = a2.getSortedStudentList(1000);
+            ArrayList<String> expectStudentList = ["perfect_s1", "perfect_s2", "s1", "s2", "null_1000_grade_sA", "null_1000_grade_sZ"];
+            if (!sortedStudentList.equals(expectedStudentList)) {
+                System.out.println("FAILED!");
+                System.out.println("Got: " + sortedStudentList);
+                return false;
+            }
         } catch (SQLException e) {
             System.out.println("FAILED! Got exception: " + e.getMessage());
             return false;
