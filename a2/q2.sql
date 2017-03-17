@@ -19,6 +19,7 @@ DROP VIEW IF EXISTS AssignmentTenAveragesForGraders CASCADE;
 DROP VIEW IF EXISTS NotGraderForAllAssignments CASCADE;
 DROP VIEW IF EXISTS NotSoftGraders CASCADE;
 DROP VIEW IF EXISTS GraderAverageAllAssignmentsSpread CASCADE;
+DROP VIEW IF EXISTS NamedAverageAllAssignmentsSpread CASCADE;
 
 -- Define views for your intermediate steps here.
 -- assignment_id, due_date, weighted_divisor?
@@ -27,7 +28,7 @@ CREATE VIEW AssignmentDivisors AS (
     FROM Assignment LEFT JOIN (
         SELECT assignment_id, rubric_id, (out_of * weight) as partial_divisor
         FROM RubricItem
-    ) AS IntermediateResult on Assignment.assignment_id = IntermediateResult.assignment_id
+    ) AS PartialDivisors on Assignment.assignment_id = PartialDivisors.assignment_id
     GROUP BY Assignment.assignment_id
 );
 
