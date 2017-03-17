@@ -42,13 +42,13 @@ CREATE VIEW StudentAssignmentGroupMark AS (
     FROM AssignmentDivisors ad -- For weighted_divisor for assignment_id
         JOIN AssignmentGroup ag -- To map between group_id and assignment_id
             ON ad.assignment_id = ag.assignment_id
-        JOIN Result r -- For a group_id's mark on the assignment
-            ON ag.group_id = r.group_id
         JOIN Membership m -- For student username belonging to group_id
             ON ag.group_id = m.group_id
+        LEFT JOIN Result r -- For a group_id's mark on the assignment, possibly null
+            ON ag.group_id = r.group_id
 );
 
--- CREATE VIEW StudentAssignmentGroupMark AS ( ... ); -- contains student_user | assignment_id | group_id | mark
+-- CREATE VIEW StudentAssignmentGroupMark AS ( ... ); -- contains student_user | assignment_id | group_id | mark?
 CREATE VIEW AssignmentGroupMarkSize AS (
     SELECT assignment_id, group_id, mark, COUNT(group_id) as group_size
     FROM StudentAssignmentGroupMark
@@ -104,7 +104,7 @@ CREATE VIEW SoloTeamedAveragesCounts AS (
 );
 
 CREATE VIEW SoloTeamedAveragesCountsDescription AS (
-    SELECT assignment_id, description, num_solo, average_solo, num_collaborators, average_collaborators, average_students_per_group
+    SELECT Assignment.assignment_id, description, num_solo, average_solo, num_collaborators, average_collaborators, average_students_per_group
     FROM SoloTeamedAveragesCounts
         JOIN Assignment
             ON Assignment.assignment_id = SoloTeamedAveragesCounts.assignment_id
