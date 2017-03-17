@@ -116,7 +116,7 @@ public class Assignment2 {
             ps.setString(1, grader);
             ps.setInt(2, groupID);
             // System.out.println("Executing <" + insert + "> with params (" + groupID + ", " + grader + ")"); // TODO remove?
-            // rs = ps.executeQuery();
+            rs = ps.executeQuery();
         } catch (SQLException se) {
             // We got an error, return false
             // System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
@@ -547,7 +547,7 @@ public class Assignment2 {
         }
 
         try {
-            System.out.println("TEST CASE: auotCreateSignleGroup correctly generates serial fields");
+            System.out.println("TEST CASE: autoCreateSignleGroup correctly generates serial fields");
             int first = a2.autocreateSingleGroup(1000,"test_repo_prefix");
             int second = a2.autocreateSingleGroup(1000,"test_repo_prefix");
             int third = a2.autocreateSingleGroup(1001,"test_repo_prefix");
