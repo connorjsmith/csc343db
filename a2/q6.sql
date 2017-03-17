@@ -17,14 +17,15 @@ CREATE TABLE q6 (
 
 -- You may find it convenient to do this for each of the views
 -- that define your intermediate steps.  (But give them better names!)
-DROP VIEW IF EXISTS AssignmentGroupSubmissions CASCADE;
-DROP VIEW IF EXISTS first_submissions_per_group CASCADE;
-DROP VIEW IF EXISTS last_submissions_per_group CASCADE;
+DROP VIEW IF EXISTS A1AssignmentGroupSubmissions CASCADE;
+DROP VIEW IF EXISTS FirstSubmissionsPerGroup CASCADE;
+DROP VIEW IF EXISTS LastSubmissionsPerGroup CASCADE;
+DROP VIEW IF EXISTS FirstLastSubmissionsPerGroup CASCADE;
 
 -- Define views for your intermediate steps here.
 -- JOIN to get assignment_id | group_id | submission_date for every submission by a group on that assignment
 -- Filter to find assignment_id with description = 'A1'
-CREATE VIEW AssignmentGroupSubmissions AS (
+CREATE VIEW A1AssignmentGroupSubmissions AS (
     SELECT ag.assignment_id, ag.group_id, s.file_name, s.username, s.submission_date
     FROM AssignmentGroup ag
         JOIN Assignment a
@@ -34,40 +35,40 @@ CREATE VIEW AssignmentGroupSubmissions AS (
     WHERE a.description = 'A1'
 );
 
--- CREATE VIEW first_submissions_per_group AS (assignment_id, group_id, MIN(submission_date))
-CREATE VIEW first_submissions_per_group AS (
+-- CREATE VIEW FirstSubmissionsPerGroup AS (assignment_id, group_id, MIN(submission_date))
+CREATE VIEW FirstSubmissionsPerGroup AS (
     SELECT assignment_id,
            group_id,
            file_name AS first_file,
            submission_date AS first_time,
            username AS first_submitter
-    FROM AssignmentGroupSubmissions outer_table
+    FROM A1AssignmentGroupSubmissions outer_table
     WHERE submission_date = (
         SELECT MIN(submission_date)
-        FROM AssignmentGroupSubmissions
+        FROM A1AssignmentGroupSubmissions
         WHERE outer_table.assignment_id = assignment_id
             AND outer_table.group_id = group_id
     ) OR submission_date IS NULL -- include groups with no submissions
 );
 
--- CREATE VIEW first_submissions_per_group AS (assignment_id, group_id, MIN(submission_date))
-CREATE VIEW last_submissions_per_group AS (
+-- CREATE VIEW FirstSubmissionsPerGroup AS (assignment_id, group_id, MIN(submission_date))
+CREATE VIEW LastSubmissionsPerGroup AS (
     SELECT outer_table.assignment_id,
            group_id,
            file_name AS last_file,
            submission_date AS last_time,
            username AS last_submitter
-    FROM AssignmentGroupSubmissions outer_table
+    FROM A1AssignmentGroupSubmissions outer_table
     WHERE submission_date = (
         SELECT MAX(submission_date)
-        FROM AssignmentGroupSubmissions
+        FROM A1AssignmentGroupSubmissions
         WHERE outer_table.assignment_id = assignment_id
             AND outer_table.group_id = group_id
     ) OR submission_date IS NULL -- include groups with no submissions
 );
 
 -- Cross product these two tables, joined on assignment_id and group_id
-CREATE VIEW first_last_submissions_per_group AS (
+CREATE VIEW FirstLastSubmissionsPerGroup AS (
     SELECT first.group_id,
            first_file,
            first_time,
@@ -76,9 +77,9 @@ CREATE VIEW first_last_submissions_per_group AS (
            last_time,
            last_submitter,
            last_time - first_time AS elapsed_time
-    FROM first_submissions_per_group first JOIN last_submissions_per_group last
+    FROM FirstSubmissionsPerGroup first JOIN LastSubmissionsPerGroup last
         ON first.group_id = last.group_id
 );
 
 -- Final answer.
-INSERT INTO q6 (SELECT * FROM first_last_submissions_per_group);
+INSERT INTO q6 (SELECT * FROM FirstLastSubmissionsPerGroup);
