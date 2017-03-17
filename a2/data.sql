@@ -78,6 +78,13 @@ INSERT INTO Grade VALUES (9999, 4000, 4);
 INSERT INTO Grade VALUES (9999, 4001, 12);
 INSERT INTO Result VALUES (9999, 10, true);
 
+-- Add a group with no grades to assignment 1000
+INSERT INTO AssignmentGroup VALUES (9998, 1000, 'perf_url');
+INSERT INTO MarkusUser VALUES ('null_1000_grade_sA', 'sln9', 'sfn9', 'student');
+INSERT INTO MarkusUser VALUES ('null_1000_grade_sZ', 'sln8', 'sfn8', 'student');
+INSERT INTO Membership VALUES ('null_1000_grade_sA', 9998);
+INSERT INTO Membership VALUES ('null_1000_grade_sZ', 9998);
+
 
 
 -- Q6 group with no submissions for A1
