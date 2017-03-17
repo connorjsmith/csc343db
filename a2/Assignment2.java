@@ -4,6 +4,7 @@ import java.sql.*;
 // as you can. At most you can justify using an array, or the more flexible
 // ArrayList. Don't go crazy with it, though. You need it rarely if at all.
 import java.util.Iterator;
+import java.util.Arrays;
 import java.util.ArrayList;
 
 public class Assignment2 {
@@ -116,7 +117,7 @@ public class Assignment2 {
             ps.setString(1, grader);
             ps.setInt(2, groupID);
             // System.out.println("Executing <" + insert + "> with params (" + groupID + ", " + grader + ")"); // TODO remove?
-            rs = ps.executeQuery();
+            ps.executeUpdate();
         } catch (SQLException se) {
             // We got an error, return false
             // System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
@@ -273,20 +274,20 @@ public class Assignment2 {
     private ArrayList<String> getSortedStudentList(int otherAssignment) {
         ArrayList<String> sortedStudentList = new ArrayList<String>();
         /*
-        SELECT username
-        FROM MarkusUsers markus
+        SELECT markus.username
+        FROM MarkusUser markus
             LEFT JOIN (
-                SELECT username, mark
+                SELECT m.username, r.mark
                 FROM Membership m
                     JOIN Result r ON m.group_id = r.group_id
                     JOIN AssignmentGroup ag ON m.group_id = ag.group_id
                 WHERE assignment_id = ?
             ) AS markedUsers ON markus.username = markedUsers.username
         WHERE type = 'student'
-        ORDER BY mark DESC NULLS LAST, username ASC
+        ORDER BY mark DESC NULLS LAST, markus.username ASC
         */
         try {
-            String sortedStudentQuery = " SELECT username FROM MarkusUsers markus LEFT JOIN ( SELECT username, mark FROM Membership m JOIN Result r ON m.group_id = r.group_id JOIN AssignmentGroup ag ON m.group_id = ag.group_id WHERE assignment_id = ?) AS markedUsers ON markus.username = markedUsers.username WHERE type = 'student' ORDER BY mark DESC NULLS LAST, username ASC";
+            String sortedStudentQuery = " SELECT markus.username FROM MarkusUser markus LEFT JOIN ( SELECT username, mark FROM Membership m JOIN Result r ON m.group_id = r.group_id JOIN AssignmentGroup ag ON m.group_id = ag.group_id WHERE assignment_id = ?) AS markedUsers ON markus.username = markedUsers.username WHERE type = 'student' ORDER BY mark DESC NULLS LAST, markus.username ASC";
             PreparedStatement ps = connection.prepareStatement(sortedStudentQuery);
             ps.setInt(1, otherAssignment);
             ResultSet rs = ps.executeQuery();
@@ -296,6 +297,7 @@ public class Assignment2 {
         } catch (SQLException e) {
             // something happened while reading from the table
             // swallow the exception and return the list so far (probably empty)
+            // System.out.println("SQLException " + e);
         }
         return sortedStudentList; // will return empty list if there are no students with grades for the assignment
     }
@@ -343,11 +345,10 @@ public class Assignment2 {
      */
 
     public boolean createGroups(int assignmentToGroup, int otherAssignment, String repoPrefix) {
-        PreparedStatment ps;
+        PreparedStatement ps;
         ResultSet rs;
-        String assignmentFound = "SELECT assignment_id FROM Assignment WHERE assignment_id = ?";
-        String groupsForAssignmentExist = "SELECT group_id FROM AssignmentGroup WHERE assignment_id = ?";
         try {
+            String assignmentFound = "SELECT assignment_id FROM Assignment WHERE assignment_id = ?";
             ps = connection.prepareStatement(assignmentFound);
             ps.setInt(1, assignmentToGroup);
             rs = ps.executeQuery();
@@ -360,8 +361,9 @@ public class Assignment2 {
                 return false; // otherAssignment Not found
             }
 
+            String groupsForAssignmentExist = "SELECT group_id FROM AssignmentGroup WHERE assignment_id = ?";
             ps = connection.prepareStatement(groupsForAssignmentExist);
-            ps.setInt(assignmentToGroup);
+            ps.setInt(1, assignmentToGroup);
             rs = ps.executeQuery();
             if (rs.next()) {
                 return false; // groups for this assignment already exist
@@ -567,7 +569,7 @@ public class Assignment2 {
         }
 
         try {
-            System.out.println("TEST CASE: autoCreateSignleGroup correctly generates serial fields");
+            System.out.println("TEST CASE: autoCreateSingleGroup correctly generates serial fields");
             int first = a2.autocreateSingleGroup(1000,"test_repo_prefix");
             int second = a2.autocreateSingleGroup(1000,"test_repo_prefix");
             int third = a2.autocreateSingleGroup(1001,"test_repo_prefix");
@@ -576,13 +578,52 @@ public class Assignment2 {
                 return false;
             }
             // TODO test other helper functions here
+            System.out.println("TEST CASE: getSortedStudentList returns a sorted list with NULLs last");
             ArrayList<String> sortedStudentList = a2.getSortedStudentList(1000);
-            ArrayList<String> expectStudentList = ["perfect_s1", "perfect_s2", "s1", "s2", "null_1000_grade_sA", "null_1000_grade_sZ"];
+            String[] expectedArray = {"perfect_s1", "perfect_s2", "s1", "s2", "null_1000_grade_sA", "null_1000_grade_sZ", "s3", "s4"};
+            ArrayList<String> expectedStudentList = new ArrayList<String>(Arrays.asList(expectedArray));
             if (!sortedStudentList.equals(expectedStudentList)) {
                 System.out.println("FAILED!");
                 System.out.println("Got: " + sortedStudentList);
                 return false;
             }
+
+            System.out.println("TEST CASE: createGroups fails if the assignmentToGroup already has groups");
+            boolean success = a2.createGroups(1000, 1, "/dne_");
+            if (success) {
+                System.out.println("FAILED!");
+                return false;
+            }
+
+            System.out.println("TEST CASE: createGroups fails if the assignmentToGroup does not exist");
+            success = a2.createGroups(1000231, 1, "/dne_");
+            if (success) {
+                System.out.println("FAILED!");
+                return false;
+            }
+            
+            System.out.println("TEST CASE: createGroups fails if the otherAssignment does not exist");
+            success = a2.createGroups(0, 91235, "/dne_");
+            if (success) {
+                System.out.println("FAILED!");
+                return false;
+            }
+            System.out.println("TEST CASE: createGroups works with proper input");
+            success = a2.createGroups(0, 1000, "/works1_");
+            if (!success) {
+                System.out.println("FAILED!");
+                return false;
+            }
+
+            System.out.println("TEST CASE: createGroups works with no students");
+            PreparedStatement ps = a2.connection.prepareStatement("TRUNCATE TABLE MarkusUser CASCADE");
+            ps.executeUpdate();
+            success = a2.createGroups(2, 1000, "/works2_");
+            if (!success) {
+                System.out.println("FAILED!");
+                return false;
+            }
+
         } catch (SQLException e) {
             System.out.println("FAILED! Got exception: " + e.getMessage());
             return false;
@@ -594,9 +635,8 @@ public class Assignment2 {
             System.out.println("FAILED!");
             return false;
         }
-        return false; // TODO NEEDS MORE TESTS
-        // System.out.println("\nPassed test 'testCreateGroups");
-        // return true;
+        System.out.println("\nPassed test 'testCreateGroups");
+        return true;
     }
 
     public static void main(String[] args) {

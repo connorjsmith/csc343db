@@ -27,6 +27,7 @@ INSERT INTO MarkusUser VALUES ('t1', 'tln1', 'tfn1', 'TA');
 
 INSERT INTO Assignment VALUES (1000, 'A1', '2017-02-08 20:00', 1, 2);
 INSERT INTO Assignment VALUES (0, 'orphan_assignment', '2017-02-08 20:00', 1, 2);
+INSERT INTO Assignment VALUES (2, 'orphan_assignment2', '2017-02-08 20:00', 1, 2);
 
 INSERT INTO Required VALUES (1000, 'A1.pdf');
 
