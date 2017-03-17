@@ -44,11 +44,11 @@ CREATE VIEW AllGraderUsernamesAllAssignments AS (
 
 -- product AllGraderUsernames with all student markus users
 CREATE VIEW AllGraderUsernamesAllStudentUsernames AS (
-    SELECT agu.username AS grader_username, asu.username AS student_username -- Distinct because we only need one entry per grader-student pair
+    SELECT agu.username AS grader_username, asu.username AS student_username
     FROM AllGraderUsernames agu CROSS JOIN AllStudentUsernames asu
 );
 
--- Join graders with assignments they have graded (join a couple tables for this)
+-- Join graders with assignments they have been assigned to grade
 CREATE VIEW GraderAssignments AS (
     SELECT DISTINCT username, assignment_id -- Distinct because we only need one entry per grader-assignment pair
     FROM Grader        -- grader username, group_id
@@ -58,7 +58,7 @@ CREATE VIEW GraderAssignments AS (
 
 -- join graders with students they have been assigned to grade
 CREATE VIEW GraderStudents AS (
-    SELECT DISTINCT Grader.username AS grader_username, Membership.username as student_username
+    SELECT DISTINCT Grader.username AS grader_username, Membership.username as student_username -- Distinct because we only need one entry per grader-student pair
     FROM Grader -- grader username, group_id
         JOIN Membership -- group_id, student username
             ON Grader.group_id = Membership.group_id
@@ -68,31 +68,27 @@ CREATE VIEW GraderStudents AS (
 CREATE VIEW NotAllAssignmentGraders AS (
     SELECT DISTINCT username
     FROM (SELECT * FROM AllGraderUsernamesAllAssignments
-	          EXCEPT
-		  SELECT * FROM GraderAssignments) t
+              EXCEPT
+          SELECT * FROM GraderAssignments) t
 );
 CREATE VIEW NotAllStudentGraders AS (
     SELECT DISTINCT grader_username AS username
     FROM (SELECT grader_username, student_username FROM AllGraderUsernamesAllStudentUsernames
-	          EXCEPT
-		  SELECT grader_username, student_username FROM GraderStudents) t
+              EXCEPT
+          SELECT grader_username, student_username FROM GraderStudents) t
 );
 
 CREATE VIEW LowCoverageGraders AS (
-	SELECT username FROM NotAllAssignmentGraders
-		UNION
-	SELECT username FROM NotAllStudentGraders
+    SELECT username FROM NotAllAssignmentGraders
+        UNION
+    SELECT username FROM NotAllStudentGraders
 );
--- HighCoverageGraders = AllGraderUsernames - LowCoverageGraders, be sure to distinct this
+-- HighCoverageGraders = AllGraderUsernames - LowCoverageGraders, DISTINCT'd by using EXCEPT instead of EXCEPT ALL
 CREATE VIEW HighCoverageGraders AS (
-	SELECT username FROM AllGraderUsernames
-		EXCEPT
-	SELECT username FROM LowCoverageGraders
+    SELECT username FROM AllGraderUsernames
+        EXCEPT
+    SELECT username FROM LowCoverageGraders
 );
-
-SELECT * FROM LowCoverageGraders;
-SELECT * FROM HighCoverageGraders;
-
 
 -- Final answer.
 INSERT INTO q7 (SELECT username AS ta FROM HighCoverageGraders); -- rename to 'ta' to match the schema

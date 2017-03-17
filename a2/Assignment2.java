@@ -116,7 +116,7 @@ public class Assignment2 {
             ps.setString(1, grader);
             ps.setInt(2, groupID);
             // System.out.println("Executing <" + insert + "> with params (" + groupID + ", " + grader + ")"); // TODO remove?
-            // rs = ps.executeQuery();
+            rs = ps.executeQuery();
         } catch (SQLException se) {
             // We got an error, return false
             // System.err.println("SQL Exception.<Message>: " + se.getMessage()); // TODO remove?
