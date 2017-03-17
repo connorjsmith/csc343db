@@ -13,9 +13,6 @@ CREATE TABLE q4 (
 	max_mark real
 );
 
--- You may find it convenient to do this for each of the views
--- that define your intermediate steps.  (But give them better names!)
-
 DROP VIEW IF EXISTS AssignmentDivisors CASCADE;
 DROP VIEW IF EXISTS AssignmentGraderGroupMark CASCADE;
 DROP VIEW IF EXISTS AssignmentGraderCountMinMaxMark CASCADE;
@@ -36,8 +33,8 @@ CREATE VIEW AssignmentGraderGroupMark AS (
     FROM AssignmentDivisors ad -- For weighted_divisor for assignment_id
         JOIN AssignmentGroup ag -- To map between group_id and assignment_id
             ON ad.assignment_id = ag.assignment_id
-	JOIN Grader g -- For grader/group associations, grader username
-		ON g.group_id = ag.group_id
+        JOIN Grader g -- For grader/group associations, grader username
+            ON g.group_id = ag.group_id
         LEFT JOIN Result r -- For mark (possibly no mark recorded for that group yet)
             ON ag.group_id = r.group_id
 );
@@ -48,10 +45,10 @@ CREATE VIEW AssignmentGraderGroupMark AS (
 CREATE VIEW AssignmentGraderCountMinMaxMark AS (
 	SELECT assignment_id, -- should be included if there is at least one grader declared for the assignment
 	       username, -- grader username, shouldn't be null (TODO?)
-		   count(mark) as num_marked,  -- will only count actual marks recorded
-	       count(*) - count(mark) as num_not_marked, -- number including nulls - number exluding nulls = number of nulls. If all null columns count(mark) = 0
-	       min(mark) as min_mark, -- possibly null
-	       max(mark) as max_mark  -- possibly null
+		   COUNT(mark) AS num_marked,  -- will only count actual marks recorded
+	       COUNT(*) - COUNT(mark) AS num_not_marked, -- number including nulls - number exluding nulls = number of nulls. If all null columns count(mark) = 0
+	       MIN(mark) AS min_mark, -- possibly null
+	       MAX(mark) AS max_mark  -- possibly null
 	FROM AssignmentGraderGroupMark
 	GROUP BY assignment_id, username
 );

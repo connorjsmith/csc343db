@@ -19,11 +19,11 @@ DROP VIEW IF EXISTS SoloTeamedAveragesCounts CASCADE;
 -- You must not change this table definition.
 CREATE TABLE q3 (
     assignment_id integer,
-    description varchar(100), 
-    num_solo integer, 
+    description varchar(100),
+    num_solo integer,
     average_solo real,
-    num_collaborators integer, 
-    average_collaborators real, 
+    num_collaborators integer,
+    average_collaborators real,
     average_students_per_submission real
 );
 
@@ -42,7 +42,7 @@ CREATE VIEW StudentAssignmentGroupMark AS (
     FROM AssignmentDivisors ad -- For weighted_divisor for assignment_id
         JOIN AssignmentGroup ag -- To map between group_id and assignment_id
             ON ad.assignment_id = ag.assignment_id
-        JOIN Result r -- For mark
+        JOIN Result r -- For a group_id's mark on the assignment
             ON ag.group_id = r.group_id
         JOIN Membership m -- For student username belonging to group_id
             ON ag.group_id = m.group_id
@@ -103,10 +103,11 @@ CREATE VIEW SoloTeamedAveragesCounts AS (
     GROUP BY solo.assignment_id, average_mark_for_solo, average_mark_for_teams, average_students_per_group
 );
 
-SELECT * FROM SoloAssignmentGroupMark;
-SELECT * FROM TeamedAssignmentGroupMark;
-SELECT * FROM SoloTeamedAveragesCounts;
--- TODO: need to pull in description
+CREATE VIEW SoloTeamedAveragesCountsDescription AS (
+    SELECT assignment_id, description, num_solo, average_solo, num_collaborators, average_collaborators, average_students_per_group
+    FROM SoloTeamedAveragesCounts
+        JOIN Assignment
+            ON Assignment.assignment_id = SoloTeamedAveragesCounts.assignment_id
+);
 -- Final answer.
--- INSERT INTO q3
-    -- put a final query here so that its results will go into the table.
+INSERT INTO q3 (SELECT * FROM SoloTeamedAveragesCountsDescription);
