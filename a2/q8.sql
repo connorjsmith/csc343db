@@ -77,7 +77,6 @@ CREATE VIEW SoloByChoiceStudents AS (
 );
 
 -- Find students which didn't have a submission for a group
--- TODO: might want to instead select from StudentGroupSizeMaxSize and filter out the max_group_size = 1 entries to avoid solo workers without a submission
 CREATE VIEW NonContributingStudents AS (
     SELECT sg.username
     FROM StudentGroup sg
@@ -127,15 +126,6 @@ CREATE VIEW MatchingStudentsSoloAndGroupAverages AS (
             ON s.username = g.username
 );
 
--- TODO create a solo group, create a student in a solo group and a normal group, create a solo-only assignment w/ groups
-SELECT * FROM StudentGroupSizeMaxSize;
-SELECT * FROM GroupGrades;
-SELECT * FROM SoloByChoiceStudents;
-SELECT * FROM NonContributingStudents;
-SELECT * FROM MatchingStudents;
-SELECT * FROM MatchingStudentsSoloAverages;
-SELECT * FROM MatchingStudentsGroupAverages;
-SELECT * FROM MatchingStudentsSoloAndGroupAverages;
 -- Final answer.
 INSERT INTO q8 (SELECT username, solo_average, group_average FROM MatchingStudentsSoloAndGroupAverages);
 	-- put a final query here so that its results will go into the table.

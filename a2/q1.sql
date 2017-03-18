@@ -56,7 +56,7 @@ CREATE VIEW GroupAssignmentPercentageGrade AS (
 CREATE VIEW BucketedGroupPercentages AS (
     SELECT assignment_id, -- not null
            percentage, -- null percentage -> all 0 columns
-           (CASE WHEN (percentage >= 80 AND percentage <= 100) THEN 1 ELSE 0 END) as bool80_100, -- TODO: include grades over 100?
+           (CASE WHEN (percentage >= 80 AND percentage <= 100) THEN 1 ELSE 0 END) as bool80_100, 
            (CASE WHEN (percentage >= 60 AND percentage < 80) THEN 1 ELSE 0 END) as bool60_79,
            (CASE WHEN (percentage >= 50 AND percentage < 60) THEN 1 ELSE 0 END) as bool50_59,
            (CASE WHEN (percentage < 50) THEN 1 ELSE 0 END) as bool_50
@@ -65,8 +65,8 @@ CREATE VIEW BucketedGroupPercentages AS (
 
 CREATE VIEW CountedBucketStudentPercentages AS (
     SELECT assignment_id, 
-           avg(percentage) as average_mark_percentage, -- TODO should this be null in the all null case?
-           sum(bool80_100) as num_80_100, -- Should these be 0 in the all null case?
+           avg(percentage) as average_mark_percentage,
+           sum(bool80_100) as num_80_100,
            sum(bool60_79) as num_60_79,
            sum(bool50_59) as num_50_59,
            sum(bool_50) as num_0_49

@@ -40,11 +40,9 @@ CREATE VIEW AssignmentGraderGroupMark AS (
 );
 
 -- Group By assignment_id, username. Aggregate COUNT(marks) AS num_marked, (COUNT(*) - COUNT(marks)) AS num_not_marked, MIN(mark) as min_mark, MAX(mark) as max_mark
--- TODO: need a test case where there isn't a grade recorded for a group to see that the count(*) - count(mark) logic works as expected
--- TODO: need a test case where there isn't a grader recorded for a group, to make sure it doesn't appear
 CREATE VIEW AssignmentGraderCountMinMaxMark AS (
 	SELECT assignment_id, -- should be included if there is at least one grader declared for the assignment
-	       username, -- grader username, shouldn't be null (TODO?)
+	       username,
 		   COUNT(mark) AS num_marked,  -- will only count actual marks recorded
 	       COUNT(*) - COUNT(mark) AS num_not_marked, -- number including nulls - number exluding nulls = number of nulls. If all null columns count(mark) = 0
 	       MIN(mark) AS min_mark, -- possibly null

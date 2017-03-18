@@ -1,8 +1,7 @@
 -- Solo superior
--- NOTE: piazza #379 drops the requirement that the final result must be "solo superior".
+-- piazza #379 drops the requirement that the final result must be "solo superior".
 --          Instead, report for all groups the required information
 
--- TODO: add some solo teams for assignment 1000
 
 SET SEARCH_PATH TO markus;
 DROP TABLE IF EXISTS q3;
