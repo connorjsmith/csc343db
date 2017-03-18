@@ -1,4 +1,3 @@
--- TODO: test the shit out of this, gonna need a large dataset
 -- Getting soft
 
 SET SEARCH_PATH TO markus;

@@ -61,9 +61,5 @@ CREATE VIEW GraderAssignmentGroupCountSpreadOverTen AS (
 
 
 -- Final answer.
--- TODO need to create enough test data for there to be a spread > 10
 INSERT INTO q5 (SELECT * FROM GraderAssignmentGroupCountSpreadOverTen);
-
-SELECT * FROM q5; -- TODO remove
-
 
