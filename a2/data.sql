@@ -74,7 +74,7 @@ INSERT INTO Result VALUES (2001, 17.25, false); -- 3*0.75 + 20*0.75
 -- Add a perfect group
 INSERT INTO AssignmentGroup VALUES (9999, 1000, 'perf_url');
 INSERT INTO Membership VALUES ('perfect_s1', 9999);
-INSERT INTO Membership VALUES ('perfect_s2', 9999);
+-- INSERT INTO Membership VALUES ('perfect_s2', 9999);
 INSERT INTO Grade VALUES (9999, 4000, 4);
 INSERT INTO Grade VALUES (9999, 4001, 12);
 INSERT INTO Result VALUES (9999, 10, true);

@@ -20,11 +20,10 @@ DROP VIEW IF EXISTS InseparablePairs CASCADE;
 DROP VIEW IF EXISTS DedupedInseparablePairs CASCADE;
 
 -- Define views for your intermediate steps here.
--- Create every (student1, student2) username pair
+-- Create every (student1, student2) username pair from usernames who have belonged to a group
 CREATE VIEW AllStudentUsernames AS (
-    SELECT username
-    FROM MarkusUser
-    WHERE type = 'student'
+    SELECT DISTINCT username
+    FROM Membership
 );
 
 -- Will contain (s1_username, s2_username) and (s2_username, s1_username) pairs
