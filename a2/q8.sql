@@ -127,5 +127,5 @@ CREATE VIEW MatchingStudentsSoloAndGroupAverages AS (
 );
 
 -- Final answer.
-INSERT INTO q8 (SELECT username, solo_average, group_average FROM MatchingStudentsSoloAndGroupAverages);
+INSERT INTO q8 (SELECT username, group_average, solo_average FROM MatchingStudentsSoloAndGroupAverages);
 	-- put a final query here so that its results will go into the table.
