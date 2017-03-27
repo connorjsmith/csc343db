@@ -15,7 +15,22 @@
 ]>
 
 <important>
-
-
-
+	<posting pID="P1">
+		<position> Position 1 </position>
+		<reqSkill what="SQL" level="4" importance="5"/>
+		<reqSkill what="Python" level="2" importance="1"/>
+	</posting>
+	<posting pID="P2">
+		<position> Position 2 </position>
+		<reqSkill what="Scheme" level="5" importance="4"/>
+	</posting>
+	<posting pID="P3">
+		<position> Position 3 </position>
+		<reqSkill what="Python" level="2" importance="1"/>
+	</posting>
+	<posting pID="P4">
+		<position> Position 4 </position>
+		<reqSkill what="SQL" level="4" importance="5"/>
+		<reqSkill what="Python" level="2" importance="1"/>
+	</posting>
 </important>
