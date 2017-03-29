@@ -1,4 +1,4 @@
-let $important := fn:doc("q2.dtd")
+let $important := fn:doc("posting.xml")
 let $reqSkill := $important//reqSkill
 let $levelImportantProduct := 
 	for $skill in $reqSkill
