@@ -1,5 +1,5 @@
 let $skills := fn:doc("resume.xml")//skill
-let $skillTypes := fn:unique($skills/@what/text()) (: Strip whitespace? :)
+let $skillTypes := fn:distinct-values($skills/@what/text()) (: Strip whitespace? :)
 let $histogram := 
 	for $skillType in $skillTypes
 		let $skillsOfThisType := $skills[@what=$skillType]

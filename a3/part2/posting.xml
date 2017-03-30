@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<postings xmlns="http://tempuri.org/posting">
+<postings>
   <posting pID="ID1">
     <position>position1</position>
-    <reqSkill what="SQL" level="1" importance="1" />
-    <reqSkill what="Scheme" level="2" importance="2" />
-    <reqSkill what="Python" level="3" importance="3" />
+    <reqSkill what="SQL" level="5" importance="5" />
+    <reqSkill what="Scheme" level="2" importance="3" />
+    <reqSkill what="Python" level="3" importance="2" />
     <questions>
       <question qID="qID1">question1</question>
       <question qID="qID2">question2</question>

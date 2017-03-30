@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<interviews xmlns="http://tempuri.org/interview">
+<interviews>
   <interview rID="rID1" pID="pID1" sID="ID1">
     <date>date1</date>
     <time>time1</time>
@@ -10,10 +10,10 @@
         <answer qID="qID2">answer2</answer>
         <answer qID="qID3">answer3</answer>
       </answers>
-      <techProficiency>techProficiency1</techProficiency>
-      <communication>communication1</communication>
-      <enthusiasm>enthusiasm1</enthusiasm>
-      <collegiality>collegiality1</collegiality>
+      <techProficiency>1</techProficiency>
+      <communication>1</communication>
+      <enthusiasm>1</enthusiasm>
+      <collegiality>21</collegiality>
     </assessment>
   </interview>
   <interview rID="rID2" pID="pID2" sID="ID1">
@@ -26,10 +26,10 @@
         <answer qID="qID5">answer5</answer>
         <answer qID="qID6">answer6</answer>
       </answers>
-      <techProficiency>techProficiency2</techProficiency>
-      <communication>communication2</communication>
-      <enthusiasm>enthusiasm2</enthusiasm>
-      <collegiality>collegiality2</collegiality>
+      <techProficiency>2</techProficiency>
+      <communication>22</communication>
+      <enthusiasm>2</enthusiasm>
+      <collegiality>22</collegiality>
     </assessment>
   </interview>
   <interview rID="rID3" pID="pID3" sID="ID1">
@@ -42,10 +42,10 @@
         <answer qID="qID8">answer8</answer>
         <answer qID="qID9">answer9</answer>
       </answers>
-      <techProficiency>techProficiency3</techProficiency>
-      <communication>communication3</communication>
-      <enthusiasm>enthusiasm3</enthusiasm>
-      <collegiality>collegiality3</collegiality>
+      <techProficiency>3</techProficiency>
+      <communication>33</communication>
+      <enthusiasm>23</enthusiasm>
+      <collegiality>23</collegiality>
     </assessment>
   </interview>
   <interviewer sID="ID1">
