@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resumes xmlns="http://tempuri.org/resume">
+  <resume rID="ID1">
+    <summary>summary1</summary>
+    <identification>
+      <name>
+        <forename>forename1</forename>
+        <surname>surname1</surname>
+        <honorific>honorific1</honorific>
+        <honorific>honorific2</honorific>
+        <honorific>honorific3</honorific>
+        <title>title1</title>
+        <title>title2</title>
+        <title>title3</title>
+      </name>
+      <DOB>DOB1</DOB>
+      <citizenship>citizenship1</citizenship>
+      <address>address1</address>
+      <telephone>telephone1</telephone>
+      <email>email1</email>
+    </identification>
+    <education>
+      <degree level="certificate">
+        <degreeName>degreeName1</degreeName>
+        <institution>institution1</institution>
+        <major>major1</major>
+        <major>major2</major>
+        <major>major3</major>
+        <minor>minor1</minor>
+        <minor>minor2</minor>
+        <minor>minor3</minor>
+        <honours />
+        <period>
+          <startDate>startDate1</startDate>
+          <endDate>endDate1</endDate>
+        </period>
+      </degree>
+      <degree level="undergraduate">
+        <degreeName>degreeName2</degreeName>
+        <institution>institution2</institution>
+        <major>major4</major>
+        <major>major5</major>
+        <major>major6</major>
+        <minor>minor4</minor>
+        <minor>minor5</minor>
+        <minor>minor6</minor>
+        <honours />
+        <period>
+          <startDate>startDate2</startDate>
+          <endDate>endDate2</endDate>
+        </period>
+      </degree>
+      <degree level="professional">
+        <degreeName>degreeName3</degreeName>
+        <institution>institution3</institution>
+        <major>major7</major>
+        <major>major8</major>
+        <major>major9</major>
+        <minor>minor7</minor>
+        <minor>minor8</minor>
+        <minor>minor9</minor>
+        <honours />
+        <period>
+          <startDate>startDate3</startDate>
+          <endDate>endDate3</endDate>
+        </period>
+      </degree>
+    </education>
+    <experience>
+      <position where="where1">
+        <title>title1</title>
+        <title>title2</title>
+        <title>title3</title>
+        <description>description1</description>
+        <period>
+          <startDate>startDate4</startDate>
+          <endDate>endDate4</endDate>
+        </period>
+      </position>
+      <position where="where2">
+        <title>title4</title>
+        <title>title5</title>
+        <title>title6</title>
+        <description>description2</description>
+        <period>
+          <startDate>startDate5</startDate>
+          <endDate>endDate5</endDate>
+        </period>
+      </position>
+      <position where="where3">
+        <title>title7</title>
+        <title>title8</title>
+        <title>title9</title>
+        <description>description3</description>
+        <period>
+          <startDate>startDate6</startDate>
+          <endDate>endDate6</endDate>
+        </period>
+      </position>
+    </experience>
+    <skills>
+      <skill what="SQL" level="1" />
+      <skill what="Scheme" level="2" />
+      <skill what="Python" level="3" />
+    </skills>
+  </resume>
+  <resume rID="ID2">
+    <summary>summary2</summary>
+    <identification>
+      <name>
+        <forename>forename2</forename>
+        <surname>surname2</surname>
+        <honorific>honorific4</honorific>
+        <honorific>honorific5</honorific>
+        <honorific>honorific6</honorific>
+        <title>title4</title>
+        <title>title5</title>
+        <title>title6</title>
+      </name>
+      <DOB>DOB2</DOB>
+      <citizenship>citizenship2</citizenship>
+      <address>address2</address>
+      <telephone>telephone2</telephone>
+      <email>email2</email>
+    </identification>
+    <education>
+      <degree level="masters">
+        <degreeName>degreeName4</degreeName>
+        <institution>institution4</institution>
+        <major>major10</major>
+        <major>major11</major>
+        <major>major12</major>
+        <minor>minor10</minor>
+        <minor>minor11</minor>
+        <minor>minor12</minor>
+        <honours />
+        <period>
+          <startDate>startDate7</startDate>
+          <endDate>endDate7</endDate>
+        </period>
+      </degree>
+      <degree level="doctoral">
+        <degreeName>degreeName5</degreeName>
+        <institution>institution5</institution>
+        <major>major13</major>
+        <major>major14</major>
+        <major>major15</major>
+        <minor>minor13</minor>
+        <minor>minor14</minor>
+        <minor>minor15</minor>
+        <honours />
+        <period>
+          <startDate>startDate8</startDate>
+          <endDate>endDate8</endDate>
+        </period>
+      </degree>
+      <degree level="certificate">
+        <degreeName>degreeName6</degreeName>
+        <institution>institution6</institution>
+        <major>major16</major>
+        <major>major17</major>
+        <major>major18</major>
+        <minor>minor16</minor>
+        <minor>minor17</minor>
+        <minor>minor18</minor>
+        <honours />
+        <period>
+          <startDate>startDate9</startDate>
+          <endDate>endDate9</endDate>
+        </period>
+      </degree>
+    </education>
+    <experience>
+      <position where="where4">
+        <title>title10</title>
+        <title>title11</title>
+        <title>title12</title>
+        <description>description4</description>
+        <period>
+          <startDate>startDate10</startDate>
+          <endDate>endDate10</endDate>
+        </period>
+      </position>
+      <position where="where5">
+        <title>title13</title>
+        <title>title14</title>
+        <title>title15</title>
+        <description>description5</description>
+        <period>
+          <startDate>startDate11</startDate>
+          <endDate>endDate11</endDate>
+        </period>
+      </position>
+      <position where="where6">
+        <title>title16</title>
+        <title>title17</title>
+        <title>title18</title>
+        <description>description6</description>
+        <period>
+          <startDate>startDate12</startDate>
+          <endDate>endDate12</endDate>
+        </period>
+      </position>
+    </experience>
+    <skills>
+      <skill what="R" level="4" />
+      <skill what="LaTeX" level="5" />
+      <skill what="SQL" level="1" />
+    </skills>
+  </resume>
+  <resume rID="ID3">
+    <summary>summary3</summary>
+    <identification>
+      <name>
+        <forename>forename3</forename>
+        <surname>surname3</surname>
+        <honorific>honorific7</honorific>
+        <honorific>honorific8</honorific>
+        <honorific>honorific9</honorific>
+        <title>title7</title>
+        <title>title8</title>
+        <title>title9</title>
+      </name>
+      <DOB>DOB3</DOB>
+      <citizenship>citizenship3</citizenship>
+      <address>address3</address>
+      <telephone>telephone3</telephone>
+      <email>email3</email>
+    </identification>
+    <education>
+      <degree level="undergraduate">
+        <degreeName>degreeName7</degreeName>
+        <institution>institution7</institution>
+        <major>major19</major>
+        <major>major20</major>
+        <major>major21</major>
+        <minor>minor19</minor>
+        <minor>minor20</minor>
+        <minor>minor21</minor>
+        <honours />
+        <period>
+          <startDate>startDate13</startDate>
+          <endDate>endDate13</endDate>
+        </period>
+      </degree>
+      <degree level="professional">
+        <degreeName>degreeName8</degreeName>
+        <institution>institution8</institution>
+        <major>major22</major>
+        <major>major23</major>
+        <major>major24</major>
+        <minor>minor22</minor>
+        <minor>minor23</minor>
+        <minor>minor24</minor>
+        <honours />
+        <period>
+          <startDate>startDate14</startDate>
+          <endDate>endDate14</endDate>
+        </period>
+      </degree>
+      <degree level="masters">
+        <degreeName>degreeName9</degreeName>
+        <institution>institution9</institution>
+        <major>major25</major>
+        <major>major26</major>
+        <major>major27</major>
+        <minor>minor25</minor>
+        <minor>minor26</minor>
+        <minor>minor27</minor>
+        <honours />
+        <period>
+          <startDate>startDate15</startDate>
+          <endDate>endDate15</endDate>
+        </period>
+      </degree>
+    </education>
+    <experience>
+      <position where="where7">
+        <title>title19</title>
+        <title>title20</title>
+        <title>title21</title>
+        <description>description7</description>
+        <period>
+          <startDate>startDate16</startDate>
+          <endDate>endDate16</endDate>
+        </period>
+      </position>
+      <position where="where8">
+        <title>title22</title>
+        <title>title23</title>
+        <title>title24</title>
+        <description>description8</description>
+        <period>
+          <startDate>startDate17</startDate>
+          <endDate>endDate17</endDate>
+        </period>
+      </position>
+      <position where="where9">
+        <title>title25</title>
+        <title>title26</title>
+        <title>title27</title>
+        <description>description9</description>
+        <period>
+          <startDate>startDate18</startDate>
+          <endDate>endDate18</endDate>
+        </period>
+      </position>
+    </experience>
+    <skills>
+      <skill what="Scheme" level="2" />
+      <skill what="Python" level="3" />
+      <skill what="R" level="4" />
+    </skills>
+  </resume>
+</resumes>

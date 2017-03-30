@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<postings xmlns="http://tempuri.org/posting">
+  <posting pID="ID1">
+    <position>position1</position>
+    <reqSkill what="SQL" level="1" importance="1" />
+    <reqSkill what="Scheme" level="2" importance="2" />
+    <reqSkill what="Python" level="3" importance="3" />
+    <questions>
+      <question qID="qID1">question1</question>
+      <question qID="qID2">question2</question>
+      <question qID="qID3">question3</question>
+    </questions>
+    <questions>
+      <question qID="qID4">question4</question>
+      <question qID="qID5">question5</question>
+      <question qID="qID6">question6</question>
+    </questions>
+    <questions>
+      <question qID="qID7">question7</question>
+      <question qID="qID8">question8</question>
+      <question qID="qID9">question9</question>
+    </questions>
+  </posting>
+  <posting pID="ID2">
+    <position>position2</position>
+    <reqSkill what="R" level="4" importance="4" />
+    <reqSkill what="LaTeX" level="5" importance="5" />
+    <reqSkill what="SQL" level="1" importance="1" />
+    <questions>
+      <question qID="qID10">question10</question>
+      <question qID="qID11">question11</question>
+      <question qID="qID12">question12</question>
+    </questions>
+    <questions>
+      <question qID="qID13">question13</question>
+      <question qID="qID14">question14</question>
+      <question qID="qID15">question15</question>
+    </questions>
+    <questions>
+      <question qID="qID16">question16</question>
+      <question qID="qID17">question17</question>
+      <question qID="qID18">question18</question>
+    </questions>
+  </posting>
+  <posting pID="ID3">
+    <position>position3</position>
+    <reqSkill what="Scheme" level="2" importance="2" />
+    <reqSkill what="Python" level="3" importance="3" />
+    <reqSkill what="R" level="4" importance="4" />
+    <questions>
+      <question qID="qID19">question19</question>
+      <question qID="qID20">question20</question>
+      <question qID="qID21">question21</question>
+    </questions>
+    <questions>
+      <question qID="qID22">question22</question>
+      <question qID="qID23">question23</question>
+      <question qID="qID24">question24</question>
+    </questions>
+    <questions>
+      <question qID="qID25">question25</question>
+      <question qID="qID26">question26</question>
+      <question qID="qID27">question27</question>
+    </questions>
+  </posting>
+</postings>
