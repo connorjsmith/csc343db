@@ -10,7 +10,7 @@ let $QualifiedCandidates :=
         return 
             <candidate rid="{$rID}"
                        numskills="{$numSkills}"
-                       citizenship="{$citizenship}">
+                       citizenzhip="{$citizenship}">
                 <name> {$candidateForename} </name>
             </candidate>
 return <qualified> { $QualifiedCandidates } </qualified>
