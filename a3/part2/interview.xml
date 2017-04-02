@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <interviews>
-  <interview rID="rID1" pID="pID1" sID="ID1">
+  <interview rID="ID1" pID="pID1" sID="SID1">
     <date>date1</date>
     <time>time1</time>
     <location>location1</location>
@@ -16,7 +16,7 @@
       <collegiality>21</collegiality>
     </assessment>
   </interview>
-  <interview rID="rID2" pID="pID2" sID="ID1">
+  <interview rID="ID2" pID="pID2" sID="SID1">
     <date>date2</date>
     <time>time2</time>
     <location>location2</location>
@@ -32,7 +32,7 @@
       <collegiality>22</collegiality>
     </assessment>
   </interview>
-  <interview rID="rID3" pID="pID3" sID="ID1">
+  <interview rID="ID3" pID="pID3" sID="SID1">
     <date>date3</date>
     <time>time3</time>
     <location>location3</location>
@@ -48,7 +48,7 @@
       <collegiality>23</collegiality>
     </assessment>
   </interview>
-  <interviewer sID="ID1">
+  <interviewer sID="SID1">
     <forename>forename1</forename>
     <surname>surname1</surname>
     <honorific>honorific1</honorific>
@@ -58,7 +58,7 @@
     <title>title2</title>
     <title>title3</title>
   </interviewer>
-  <interviewer sID="ID2">
+  <interviewer sID="SID2">
     <forename>forename2</forename>
     <surname>surname2</surname>
     <honorific>honorific4</honorific>
@@ -68,7 +68,7 @@
     <title>title5</title>
     <title>title6</title>
   </interviewer>
-  <interviewer sID="ID3">
+  <interviewer sID="SID3">
     <forename>forename3</forename>
     <surname>surname3</surname>
     <honorific>honorific7</honorific>
