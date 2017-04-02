@@ -1,16 +1,24 @@
-Postings = {
-	pID = PRIMARY KEY
-	position = STRING NOT NULL
-} Trigger on ReqSkills insert to ensure a posting has a req skill?
+-- TODO remove this
+DROP SCHEMA IF EXISTS PostingXML CASCADE;
+CREATE SCHEMA PostingXML;
+SET search_path TO PostingXML;
 
-ReqSkills = {
-	pID = FOREIGN KEY to Postings
-	what = (SQL|Scheme|Python|R|LaTeX) NOT NULL
-	importance = (1|2|3|4|5) NOT NULL
-} NEEDS TRIGGER
+CREATE TABLE Posting (
+    pID INTEGER PRIMARY KEY,
+    position TEXT NOT NULL
+);
 
-Questions = {
-	pID = FOREIGN KEY NOT NULL
-	qID = PRIMARY KEY
-	question = STRING NOT NULL
-}
+CREATE DOMAIN SkillImportanceType AS INTEGER
+    check (value >= 1 AND value <= 5);
+
+CREATE TABLE ReqSkill (
+    pID INTEGER REFERENCES Posting NOT NULL,
+    what SkillWhatType NOT NULL,
+    importance SkillImportanceType NOT NULL
+);
+
+CREATE TABLE Question (
+    qID INTEGER PRIMARY KEY,
+    postingID INTEGER REFERENCES Posting NOT NULL,
+    question TEXT NOT NULL
+);

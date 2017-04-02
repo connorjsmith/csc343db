@@ -9,7 +9,7 @@ SET search_path TO ResumeXML;
 
 
 CREATE TABLE Identification (
-    pID INTEGER PRIMARY KEY,
+    personID INTEGER PRIMARY KEY,
     forename TEXT NOT NULL,
     surname TEXT NOT NULL,
     DOB DATE NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE Identification (
 
 CREATE TABLE Resume (
     rID INTEGER PRIMARY KEY,
-    pID INTEGER REFERENCES Identification NOT NULL
+    personID INTEGER REFERENCES Identification NOT NULL
 );
 
 CREATE TABLE Summary (
@@ -30,12 +30,12 @@ CREATE TABLE Summary (
 );
 
 CREATE TABLE Honorific (
-    pID INTEGER REFERENCES Identification NOT NULL,
+    personID INTEGER REFERENCES Identification NOT NULL,
     honorific TEXT NOT NULL
 );
 
 CREATE TABLE PersonTitles (
-    pID INTEGER REFERENCES Identification NOT NULL,
+    personID INTEGER REFERENCES Identification NOT NULL,
     title TEXT NOT NULL
 );
 
