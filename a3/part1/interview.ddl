@@ -1,22 +1,48 @@
-Interviews = {
-	rID FOREIGN KEY to Resume
-	pID FOREIGN KEY to Posting
-	sID FOREIGN KEY to Interviewer
-	dateTime = DATE not null
-	Location = STRING not null
-	techProficiency = Number not null
-	communication = Number not null
-	enthusiasm = Number not null
-	collegiality = Number not null
-} TRIGGER to ensure numbers 0 <= x <= 100. Primary Key?
+DROP SCHEMA IF EXISTS InterviewXML CASCADE;
+CREATE SCHEMA InterviewXML;
+SET search_path TO InterviewXML;
 
-Interviwer = {
-	TODO: New column in identity table? Add a role as candidate or interviewer?
-	otherwise will have to replicate most of the identity relation here
-}
 
-Answers = {
-	(rID, pID, sID) FOREIGN KEY to Interviews
-	qID = FOREIGN KEY to Questions
-	answer = STRING not null
-}
+CREATE DOMAIN AssessmentScore AS INTEGER
+    check (value >= 0 AND value <= 100);
+
+CREATE TABLE Interview (
+    rID INTEGER REFERENCES Resume NOT NULL;
+    postingID INTEGER REFERENCES Posting NOT NULL;
+    sID INTEGER REFERENCES Interviewer NOT NULL;
+    dateTime TIMESTAMP NOT NULL,
+    location TEXT NOT NULL,
+    techProficiency AssessmentScore NOT NULL,
+    communication AssessmentScore NOT NULL,
+    enthusiasm AssessmentScore NOT NULL,
+    collegiality AssessmentScore, -- nullable
+    (rID, postingID, dateTime) PRIMARY KEY
+);
+
+CREATE TABLE Interviewer (
+    sID INTEGER PRIMARY KEY,
+    forename TEXT NOT NULL,
+    surname TEXT NOT NULL,
+);
+
+-- TODO a little redundant?
+CREATE TABLE InterviewerTitle (
+    sID INTEGER REFERENCES Interviewer NOT NULL,
+    title TEXT NOT NULL
+);
+
+-- TODO a little redundant?
+CREATE TABLE InterviewerHonorific (
+    sID INTEGER REFERENCES Interviewer NOT NULL,
+    honorific TEXT NOT NULL
+);
+
+CREATE TABLE Answer (
+    rID INTEGER NOT NULL,
+    postingID INTEGER NOT NULL,
+    dateTime TIMESTAMP NOT NULL,
+    qID INTEGER REFERENCES Question NOT NULL,
+    answer TEXT NOT NULL,
+    (rID, postingID, qID) UNQIUE,
+    (rID, postingID, dateTime) REFERENCES Interview
+);
