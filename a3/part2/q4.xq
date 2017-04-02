@@ -4,7 +4,7 @@ let $bestForAllInterviews :=
     for $i in $interviews
         let $interviewerID := data($i/@sID)
         let $resumeID := data($i/@rID)
-        let $resumeForename := $resumes[@rID=$resumeID]/identification/forename/text()
+        let $resumeForename := $resumes[@rID=$resumeID]/identification/name/forename/text()
         let $positionID := data($i/@pID)
         let $skills := $i/assessment/(techProficiency|communication|enthusiasm|collegiality)
         let $skillValues :=
