@@ -11,6 +11,7 @@ CREATE TABLE Posting (
 CREATE DOMAIN SkillImportanceType AS INTEGER
     check (value >= 1 AND value <= 5);
 
+CREATE TYPE SkillWhatType AS ENUM('SQL', 'Scheme', 'Python', 'R', 'LaTeX'); -- TODO: remove this
 CREATE TABLE ReqSkill (
     pID INTEGER REFERENCES Posting NOT NULL,
     what SkillWhatType NOT NULL,

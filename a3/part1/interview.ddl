@@ -7,16 +7,16 @@ CREATE DOMAIN AssessmentScore AS INTEGER
     check (value >= 0 AND value <= 100);
 
 CREATE TABLE Interview (
-    rID INTEGER REFERENCES Resume NOT NULL;
-    postingID INTEGER REFERENCES Posting NOT NULL;
-    sID INTEGER REFERENCES Interviewer NOT NULL;
+    rID INTEGER REFERENCES Resume NOT NULL,
+    postingID INTEGER REFERENCES Posting NOT NULL,
+    sID INTEGER REFERENCES Interviewer NOT NULL,
     dateTime TIMESTAMP NOT NULL,
     location TEXT NOT NULL,
     techProficiency AssessmentScore NOT NULL,
     communication AssessmentScore NOT NULL,
     enthusiasm AssessmentScore NOT NULL,
     collegiality AssessmentScore, -- nullable
-    (rID, postingID, dateTime) PRIMARY KEY
+    PRIMARY KEY (rID, postingID, dateTime)
 );
 
 CREATE TABLE Interviewer (
@@ -43,6 +43,6 @@ CREATE TABLE Answer (
     dateTime TIMESTAMP NOT NULL,
     qID INTEGER REFERENCES Question NOT NULL,
     answer TEXT NOT NULL,
-    (rID, postingID, qID) UNQIUE,
+    UNIQUE (rID, postingID, qID),
     (rID, postingID, dateTime) REFERENCES Interview
 );
