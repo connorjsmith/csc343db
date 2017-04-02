@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resumes xmlns="http://tempuri.org/resume">
+<resumes>
   <resume rID="ID1">
     <summary>summary1</summary>
     <identification>
@@ -99,7 +99,6 @@
       </position>
     </experience>
     <skills>
-      <skill what="SQL" level="1" />
       <skill what="Scheme" level="2" />
       <skill what="Python" level="3" />
     </skills>
@@ -307,9 +306,9 @@
       </position>
     </experience>
     <skills>
-      <skill what="Scheme" level="2" />
       <skill what="Python" level="3" />
       <skill what="R" level="4" />
+      <skill what="SQL" level="1" />
     </skills>
   </resume>
 </resumes>
