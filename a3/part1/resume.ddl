@@ -16,16 +16,17 @@ CREATE TABLE Identification (
     citizenship TEXT NOT NULL,
     address TEXT NOT NULL,
     telephone TEXT NOT NULL, -- TODO: text or var char for correct number of digits?
-    email TEXT NOT NULL
+    email TEXT UNIQUE NOT NULL -- TODO: could make this the primary key
 );
 
 CREATE TABLE Resume (
     rID INTEGER PRIMARY KEY,
-    personID INTEGER REFERENCES Identification NOT NULL
+    personID INTEGER REFERENCES Identification NOT NULL, 
+    UNIQUE(rID, personID) -- TODO could unqiue(personID) to enforce only 1 resume,
 );
 
 CREATE TABLE Summary (
-    rID INTEGER REFERENCES Resume NOT NULL,
+    rID INTEGER REFERENCES Resume UNIQUE NOT NULL, -- don't let a resume have more than one summary
     Summary TEXT NOT NULL
 );
 
@@ -39,9 +40,7 @@ CREATE TABLE PersonTitles (
     title TEXT NOT NULL
 );
 
-
 CREATE TYPE DegreeLevelType AS ENUM('certificate', 'undergraduate', 'professional', 'masters', 'doctoral');
-
 CREATE TABLE Degree (
     degreeID INTEGER PRIMARY KEY,
     degreeName TEXT NOT NULL,
@@ -55,6 +54,7 @@ CREATE TABLE Degree (
 CREATE TABLE Education (
     rID INTEGER REFERENCES Resume NOT NULL,
     degreeID INTEGER REFERENCES Degree NOT NULL
+    unique(rID, degreeID) -- don't let a resume list the same education twice TODO maybe make degreeID unique so it can only belong to one resume?
 );
 
 CREATE TABLE Major (
@@ -67,15 +67,15 @@ CREATE TABLE Minor (
     minor TEXT NOT NULL
 );
 
-
 CREATE TYPE SkillWhatType AS ENUM('SQL', 'Scheme', 'Python', 'R', 'LaTeX');
-CREATE DOMAIN SkillLevelType AS INTEGER
+CREATE DOMAIN SkillLevelType AS INTEGER -- TODO do i need a not null check on domains?
     check (value >= 1 AND value <= 5);
 
 CREATE TABLE Skill (
     rID INTEGER REFERENCES Resume NOT NULL,
     what SkillWhatType NOT NULL,
-    level SkillLevelType
+    level SkillLevelType,
+    UNIQUE(rID, what) -- don't allow a skill to be repeated twice for a resume
 );
 
 CREATE TABLE Position (
@@ -92,10 +92,12 @@ CREATE TABLE PositionTitle (
 
 CREATE TABLE PositionDescription (
     positionID INTEGER REFERENCES Position NOT NULL,
-    description TEXT NOT NULL
+    description TEXT NOT NULL,
+    UNIQUE(positionID) -- don't let a position have more than one description
 );
 
 CREATE TABLE Experience (
     rID INTEGER REFERENCES Resume NOT NULL,
-    positionID INTEGER references Position NOT NULL
+    positionID INTEGER REFERENCES Position NOT NULL,
+    UNIQUE(rID, positionID) -- don't let a resume list the same position twice TODO maybe make positionID unique so it can only belong to one resume?
 );

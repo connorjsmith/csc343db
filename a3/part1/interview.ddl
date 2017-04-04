@@ -3,7 +3,7 @@ CREATE SCHEMA InterviewXML;
 SET search_path TO InterviewXML;
 
 
-CREATE DOMAIN AssessmentScore AS INTEGER
+CREATE DOMAIN AssessmentScore AS INTEGER -- TODO do we need the not null constraint?
     check (value >= 0 AND value <= 100);
 
 CREATE TABLE Interview (
@@ -16,7 +16,7 @@ CREATE TABLE Interview (
     communication AssessmentScore NOT NULL,
     enthusiasm AssessmentScore NOT NULL,
     collegiality AssessmentScore, -- nullable
-    PRIMARY KEY (rID, postingID, dateTime)
+    PRIMARY KEY (rID, postingID, dateTime) -- can only interview one resume holder for one position at a time
 );
 
 CREATE TABLE Interviewer (
@@ -43,6 +43,6 @@ CREATE TABLE Answer (
     dateTime TIMESTAMP NOT NULL,
     qID INTEGER REFERENCES Question NOT NULL,
     answer TEXT NOT NULL,
-    UNIQUE (rID, postingID, qID),
-    (rID, postingID, dateTime) REFERENCES Interview
+    UNIQUE (rID, postingID, qID), -- don't let a resume holder give more than one answer to a posting's question
+    FOREIGN KEY (rID, postingID, dateTime) REFERENCES Interview
 );

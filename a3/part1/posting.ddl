@@ -8,18 +8,25 @@ CREATE TABLE Posting (
     position TEXT NOT NULL
 );
 
+CREATE TYPE SkillWhatType AS ENUM('SQL', 'Scheme', 'Python', 'R', 'LaTeX'); -- TODO: remove this
+
 CREATE DOMAIN SkillImportanceType AS INTEGER
     check (value >= 1 AND value <= 5);
 
-CREATE TYPE SkillWhatType AS ENUM('SQL', 'Scheme', 'Python', 'R', 'LaTeX'); -- TODO: remove this
 CREATE TABLE ReqSkill (
     pID INTEGER REFERENCES Posting NOT NULL,
     what SkillWhatType NOT NULL,
-    importance SkillImportanceType NOT NULL
+    importance SkillImportanceType NOT NULL,
+    UNIQUE(pID, what) -- don't let a posting list the same skill twice
+);
+
+CREATE TABLE PostingQuestion (
+    qID INTEGER REFERENCES Question NOT NULL,
+    postingID INTEGER REFERENCES Posting NOT NULL,
+    UNIQUE(qID, postingID) -- don't let a posting repeat the same question twice
 );
 
 CREATE TABLE Question (
     qID INTEGER PRIMARY KEY,
-    postingID INTEGER REFERENCES Posting NOT NULL,
     question TEXT NOT NULL
 );
