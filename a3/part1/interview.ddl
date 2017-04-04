@@ -1,3 +1,4 @@
+-- TODO write assumptions or stuff you cant express from the dtd (1 or more with a foreign key)
 DROP SCHEMA IF EXISTS InterviewXML CASCADE;
 CREATE SCHEMA InterviewXML;
 SET search_path TO InterviewXML;

@@ -48,13 +48,8 @@ CREATE TABLE Degree (
     institution TEXT NOT NULL,
     honors BOOLEAN NOT NULL,
     startPeriod DATE NOT NULL,
-    endPeriod DATE NOT NULL -- though really this could be null if it is on-going
-);
-
-CREATE TABLE Education (
-    rID INTEGER REFERENCES Resume NOT NULL,
-    degreeID INTEGER REFERENCES Degree NOT NULL
-    unique(rID, degreeID) -- don't let a resume list the same education twice TODO maybe make degreeID unique so it can only belong to one resume?
+    endPeriod DATE NOT NULL, -- though really this could be null if it is on-going
+    rID INTEGER REFERENCES Resume NOT NULL
 );
 
 CREATE TABLE Major (
@@ -80,6 +75,7 @@ CREATE TABLE Skill (
 
 CREATE TABLE Position (
     positionID INTEGER PRIMARY KEY,
+    rID INTEGER REFERENCES Resume NOT NULL,
     "where" TEXT NOT NULL,
     startDate DATE NOT NULL,
     endDate DATE NOT NULL
@@ -91,13 +87,6 @@ CREATE TABLE PositionTitle (
 );
 
 CREATE TABLE PositionDescription (
-    positionID INTEGER REFERENCES Position NOT NULL,
-    description TEXT NOT NULL,
-    UNIQUE(positionID) -- don't let a position have more than one description
-);
-
-CREATE TABLE Experience (
-    rID INTEGER REFERENCES Resume NOT NULL,
-    positionID INTEGER REFERENCES Position NOT NULL,
-    UNIQUE(rID, positionID) -- don't let a resume list the same position twice TODO maybe make positionID unique so it can only belong to one resume?
+    positionID INTEGER REFERENCES Position UNIQUE NOT NULL, -- don't let a position have more than one description
+    description TEXT NOT NULL
 );
