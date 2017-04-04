@@ -3,7 +3,6 @@
   <posting pID="ID1">
     <position>position1</position>
     <reqSkill what="SQL" level="5" importance="5" />
-    <reqSkill what="Scheme" level="2" importance="3" />
     <reqSkill what="Python" level="3" importance="2" />
     <questions>
       <question qID="qID1">question1</question>
@@ -44,7 +43,6 @@
   </posting>
   <posting pID="ID3">
     <position>position3</position>
-    <reqSkill what="Scheme" level="2" importance="2" />
     <reqSkill what="Python" level="3" importance="3" />
     <reqSkill what="R" level="4" importance="4" />
     <questions>

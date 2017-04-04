@@ -1,5 +1,8 @@
-let $interviews := fn:doc("interview.xml")/interviews/interview
-let $resumes := fn:doc("resume.xml")/resumes/resume
+declare variable $dataset0 external; (: interview.xml :)
+declare variable $dataset1 external; (: resume.xml :)
+
+let $interviews := $dataset0/interviews/interview
+let $resumes := $dataset1/resumes/resume
 let $bestForAllInterviews :=
     for $i in $interviews
         let $interviewerID := data($i/@sID)
