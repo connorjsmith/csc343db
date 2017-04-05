@@ -6,8 +6,6 @@ DROP SCHEMA IF EXISTS ResumeXML CASCADE;
 CREATE SCHEMA ResumeXML;
 SET search_path TO ResumeXML;
 
-
-
 CREATE TABLE Identification (
     personID INTEGER PRIMARY KEY,
     forename TEXT NOT NULL,
@@ -15,14 +13,14 @@ CREATE TABLE Identification (
     DOB DATE NOT NULL,
     citizenship TEXT NOT NULL,
     address TEXT NOT NULL,
-    telephone TEXT NOT NULL, -- TODO: text or var char for correct number of digits?
-    email TEXT UNIQUE NOT NULL -- TODO: could make this the primary key
+    telephone TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE Resume (
     rID INTEGER PRIMARY KEY,
     personID INTEGER REFERENCES Identification NOT NULL, 
-    UNIQUE(rID, personID) -- TODO could unqiue(personID) to enforce only 1 resume,
+    UNIQUE(personID) -- According to Piazza @642, a person can only have one resume
 );
 
 CREATE TABLE Summary (
@@ -32,12 +30,15 @@ CREATE TABLE Summary (
 
 CREATE TABLE Honorific (
     personID INTEGER REFERENCES Identification NOT NULL,
-    honorific TEXT NOT NULL
+    honorific TEXT NOT NULL,
+    UNIQUE(personID, honorific) -- don't let a person have duplicate honorifics
 );
 
 CREATE TABLE PersonTitles (
     personID INTEGER REFERENCES Identification NOT NULL,
-    title TEXT NOT NULL
+    title TEXT NOT NULL,
+    UNIQUE(personID, title) -- don't let a person have duplicate titles
+
 );
 
 CREATE TYPE DegreeLevelType AS ENUM('certificate', 'undergraduate', 'professional', 'masters', 'doctoral');
@@ -83,7 +84,8 @@ CREATE TABLE Position (
 
 CREATE TABLE PositionTitle (
     positionID INTEGER REFERENCES Position NOT NULL,
-    title TEXT NOT NULL
+    title TEXT NOT NULL,
+    UNIQUE(positionID, title) -- don't let a position have duplicate titles
 );
 
 CREATE TABLE PositionDescription (

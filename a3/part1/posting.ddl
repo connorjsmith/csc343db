@@ -10,7 +10,7 @@ CREATE TABLE Posting (
 
 CREATE TYPE SkillWhatType AS ENUM('SQL', 'Scheme', 'Python', 'R', 'LaTeX'); -- TODO: remove this
 
-CREATE DOMAIN SkillImportanceType AS INTEGER
+CREATE DOMAIN SkillImportanceType AS INTEGER -- TODO is the not-null check built into this?
     check (value >= 1 AND value <= 5);
 
 CREATE TABLE ReqSkill (

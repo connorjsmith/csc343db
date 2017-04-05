@@ -23,19 +23,19 @@ CREATE TABLE Interview (
 CREATE TABLE Interviewer (
     sID INTEGER PRIMARY KEY,
     forename TEXT NOT NULL,
-    surname TEXT NOT NULL,
+    surname TEXT NOT NULL
 );
 
--- TODO a little redundant?
 CREATE TABLE InterviewerTitle (
     sID INTEGER REFERENCES Interviewer NOT NULL,
-    title TEXT NOT NULL
+    title TEXT NOT NULL,
+    UNIQUE(sID, honorific) -- don't let an interviewer have duplicate titles
 );
 
--- TODO a little redundant?
 CREATE TABLE InterviewerHonorific (
     sID INTEGER REFERENCES Interviewer NOT NULL,
-    honorific TEXT NOT NULL
+    honorific TEXT NOT NULL,
+    UNIQUE(sID, honorific) -- don't let an interviewer have duplicate honorifics,
 );
 
 CREATE TABLE Answer (
