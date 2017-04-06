@@ -5,11 +5,10 @@ let $interviews := $dataset0/interviews/interview
 let $resumes := $dataset1/resumes/resume
 let $bestForAllInterviews :=
     for $i in $interviews
-        let $interviewerID := data($i/@sID)
         let $resumeID := data($i/@rID)
         let $resumeForename := $resumes[@rID=$resumeID]/identification/name/forename/text()
         let $positionID := data($i/@pID)
-        let $skills := $i/assessment/(techProficiency|communication|enthusiasm|collegiality)
+        let $skills := $i/assessment/(communication|enthusiasm|collegiality)
         let $skillValues :=
             for $skill in $skills
             return xs:integer($skill/text())
