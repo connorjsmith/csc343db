@@ -1,7 +1,16 @@
--- TODO: remove this, just used for testing
-DROP SCHEMA IF EXISTS SQLXML CASCADE;
-CREATE SCHEMA SQLXML;
-SET search_path TO SQLXML;
+-- Count not enforce constraints:
+--    1. one or more titles associated with a position
+--        <!ELEMENT position (title+,description?,period)>
+--    2. one or more majors associated with a degree
+--        <!ELEMENT degree (degreeName,institution,major+,minor*,honours?,period)>
+--    3. one or more honorifics associated with a name
+--        <!ELEMENT name (forename,surname,honorific+,title*)>
+--    4. one or more reqSkill associated with a posting
+--        <!ELEMENT posting (position,reqSkill+,questions*)>
+--    5. one or more interviewers and one or more interviews
+--        <!ELEMENT interviews (interview+, interviewer+)>
+--    6. one or more honorifics associated with an interviewer
+--        <!ELEMENT interviewer (forename,surname,honorific+,title*)>
 
 -- Resume.dtd
 CREATE TABLE Identification (
@@ -18,24 +27,24 @@ CREATE TABLE Identification (
 CREATE TABLE Resume (
     rID INTEGER PRIMARY KEY,
     personID INTEGER REFERENCES Identification NOT NULL, 
-    UNIQUE(personID) -- According to Piazza @642, a person can only have one resume
+    UNIQUE(personID) -- Additional Constraint: According to Piazza @642, a person can only have one resume
 );
 
 CREATE TABLE Summary (
-    rID INTEGER REFERENCES Resume UNIQUE NOT NULL, -- don't let a resume have more than one summary
+    rID INTEGER REFERENCES Resume UNIQUE NOT NULL, -- Additional Constraint: don't let a resume have more than one summary
     Summary TEXT NOT NULL
 );
 
 CREATE TABLE Honorific (
     personID INTEGER REFERENCES Identification NOT NULL,
     honorific TEXT NOT NULL,
-    UNIQUE(personID, honorific) -- don't let a person have duplicate honorifics
+    UNIQUE(personID, honorific) -- Additional Constraint: don't let a person have duplicate honorifics
 );
 
 CREATE TABLE PersonTitles (
     personID INTEGER REFERENCES Identification NOT NULL,
     title TEXT NOT NULL,
-    UNIQUE(personID, title) -- don't let a person have duplicate titles
+    UNIQUE(personID, title) -- Additional Constraint: don't let a person have duplicate titles
 
 );
 
@@ -69,7 +78,7 @@ CREATE TABLE Skill (
     rID INTEGER REFERENCES Resume NOT NULL,
     what SkillWhatType NOT NULL,
     level SkillLevelType NOT NULL,
-    UNIQUE(rID, what) -- don't allow a skill to be repeated twice for a resume
+    UNIQUE(rID, what) -- Additional Constraint: don't allow a skill to be repeated twice for a resume
 );
 
 CREATE TABLE Position (
@@ -83,7 +92,7 @@ CREATE TABLE Position (
 CREATE TABLE PositionTitle (
     positionID INTEGER REFERENCES Position NOT NULL,
     title TEXT NOT NULL,
-    UNIQUE(positionID, title) -- don't let a position have duplicate titles
+    UNIQUE(positionID, title) -- Additional Constraint: don't let a position have duplicate titles
 );
 
 CREATE TABLE PositionDescription (
@@ -104,7 +113,7 @@ CREATE TABLE ReqSkill (
     postingID INTEGER REFERENCES Posting NOT NULL,
     what SkillWhatType NOT NULL,
     importance SkillImportanceType NOT NULL,
-    UNIQUE(postingID, what) -- don't let a posting list the same skill twice
+    UNIQUE(postingID, what) -- Additional Constraint: don't let a posting list the same skill twice
 );
 
 CREATE TABLE Question (
@@ -132,19 +141,19 @@ CREATE TABLE Interview (
     communication AssessmentScore NOT NULL,
     enthusiasm AssessmentScore NOT NULL,
     collegiality AssessmentScore, -- nullable
-    PRIMARY KEY (rID, postingID, dateTime) -- can only interview one resume holder for one position at a time
+    PRIMARY KEY (rID, postingID, dateTime) -- Additional Constraint: can only interview one resume holder for one position at a time, no "double booking" with the exact same start/end date
 );
 
 CREATE TABLE InterviewerTitle (
     sID INTEGER REFERENCES Interviewer NOT NULL,
     title TEXT NOT NULL,
-    UNIQUE(sID, title) -- don't let an interviewer have duplicate titles
+    UNIQUE(sID, title) -- Additional Constraint: don't let an interviewer have duplicate titles
 );
 
 CREATE TABLE InterviewerHonorific (
     sID INTEGER REFERENCES Interviewer NOT NULL,
     honorific TEXT NOT NULL,
-    UNIQUE(sID, honorific) -- don't let an interviewer have duplicate honorifics
+    UNIQUE(sID, honorific) -- Additional Constraint: don't let an interviewer have duplicate honorifics
 );
 
 CREATE TABLE Answer (
@@ -153,6 +162,6 @@ CREATE TABLE Answer (
     dateTime TIMESTAMP NOT NULL,
     qID INTEGER REFERENCES Question NOT NULL,
     answer TEXT NOT NULL,
-    UNIQUE (rID, postingID, qID), -- don't let a resume holder give more than one answer to a posting's question
+    UNIQUE (rID, postingID, qID), -- Additional Constraint: don't let a resume holder give more than one answer to a posting's question
     FOREIGN KEY (rID, postingID, dateTime) REFERENCES Interview
 );
