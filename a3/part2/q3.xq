@@ -1,5 +1,4 @@
 declare variable $dataset0 external;
-(: TODO we can probably refactor this step out and use a where in the FOR statement :)
 let $QualifiedCandidates := 
     for $r in $dataset0//resume
         let $candidateForename := $r//forename/text()
