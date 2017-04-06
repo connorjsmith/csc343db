@@ -129,7 +129,7 @@ CREATE TABLE Interviewer (
     surname TEXT NOT NULL
 );
 
-CREATE DOMAIN AssessmentScore AS INTEGER
+CREATE DOMAIN AssessmentScore AS REAL
     check (value >= 0 AND value <= 100);
 CREATE TABLE Interview (
     rID INTEGER REFERENCES Resume NOT NULL,
